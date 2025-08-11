@@ -255,5 +255,37 @@ export const newsItems: NewsItem[] = [
     author: "Sara Norman",
     slug: "04-29-2025",
   },
+  {
+    id: "16",
+    title: "DOE National Best Paper Award for Our Computing Group For Work on LLMs and Sentiment Analysis",
+    excerpt:
+      "NERS students are among the authors of the winning research paper.",
+    content:
+      "To read full article, please visit the link below.",
+    link: "https://ners.engin.umich.edu/2025/06/16/ai-powered-paper-on-nuclear-sentiment-wins-neup-award/",
+    date: "June 16, 2025",
+    timestamp: 1750057200,
+    imageUrl: "/news/06_16_2025-Award.jpg",
+    category: "general",
+    featured: true,
+    author: "Sara Norman",
+    slug: "06-16-2025",
+  },
+  {
+    id: "17",
+    title: "Majdi Radaideh receives ANS Ted Quinn Early Career Award",
+    excerpt:
+      "The award honors outstanding contributions in instrumentation, control, and human-machine interfaces for nuclear systems.",
+    content:
+      "To read full article, please visit the link below.",
+    link: "https://ners.engin.umich.edu/2025/06/26/majdi-radaideh-receives-ans-ted-quinn-early-career-award/",
+    date: "June 26, 2025",
+    timestamp: 1750921200,
+    imageUrl: "/news/06_26_2025-Award.jpg",
+    category: "general",
+    featured: true,
+    author: "Sara Norman",
+    slug: "06-26-2025",
+  },
 ]
 
