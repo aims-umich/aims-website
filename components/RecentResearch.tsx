@@ -8,16 +8,16 @@ import { FileText, Users, BookOpen } from "lucide-react"
 import { Button } from "@heroui/react"
 
 const paper = {
-  title: "Fairness and social bias quantification in Large Language Models for sentiment analysis",
-  authors: ["Mohammed I. Radaideh", "O. Hwang Kwon", "Majdi I. Radaideh"],
-  journal: "Knowledge-Based Systems",
+  title: "Nuclear microreactor transient and load-following control with deep reinforcement learning",
+  authors: ["Leo Tunkle", "Kamal Abdulraheem", "Linyu Lin", "Majdi I. Radaideh"],
+  journal: "Energy Conversion and Management: X",
   year: 2025,
-  doi: "10.1016/j.knosys.2025.113569",
+  doi: "10.1016/j.ecmx.2025.101090",
   abstract:
-    "Large Language Models (LLMs) have enhanced various Natural Language Processing (NLP) tasks, including text generation and classification. However, studies reveal that LLMs exhibit social biases, such as associating certain occupations with specific genders. While previous research has focused on bias in text generation, limited attention has been given to text classification, such as sentiment analysis. This study quantifies social bias in sentiment analysis using five open-source LLMs: BERT, GPT-2, LLaMA-2, Falcon, and MistralAI, fine-tuned on two large social media datasets, the first one is related to nuclear energy, while the second dataset is general and contains tweets related to various subjects. We conducted approximately 1,500 prompt experiments with variations in words reflecting energy source, gender, politics, age, and ethnicity. A fair language model should provide the same sentiment for both prompts; differing sentiments would indicate bias. Explainable methods were employed to analyze how words related to the five subjects (energy, gender, politics, age, ethnicity) contributed to the sentiment. Findings show that social bias persists in LLMs for sentiment analysis, and while fine-tuning can enhance fairness, it does not always eliminate bias, particularly regarding age groups.",
+    "The economic feasibility of nuclear microreactors will depend on minimizing operating costs through advancements in autonomous control, especially when these microreactors are operating alongside other types of energy systems (e.g., renewable energy). This study explores the application of deep reinforcement learning (RL) for real-time drum control in microreactors, exploring performance in regard to load-following scenarios. By leveraging a point kinetics model with thermal and xenon feedback, we first establish a baseline using a single-output RL agent, then compare it against a traditional proportional–integral–derivative (PID) controller. This study demonstrates that RL controllers, including both single- and multi-agent RL (MARL) frameworks, can achieve load-following performance similar or even superior to traditional PID control across a range of load-following scenarios. In short transients, the RL agent was able to reduce the tracking error rate in comparison to PID by one half to one third. Over extended 300 min load-following scenarios in which xenon feedback becomes a dominant factor, PID maintained better accuracy, but RL still remained within a 1% error margin despite being trained only on short-duration scenarios. This highlights RL’s strong ability to generalize and extrapolate to longer, more complex transients, affording substantial reductions in training costs and reduced overfitting. Furthermore, when control was extended to multiple drums, MARL enabled independent drum control as well as maintained reactor symmetry constraints without sacrificing performance—an objective that standard single-agent RL could not learn. We also found that the RL controllers were able to maintain lower error rates than PID, despite increasing levels of Gaussian noise being added to the power measurements, doing so with at least 10% and upwards of 150% less control effort. These findings illustrate RL’s potential for autonomous nuclear reactor control, laying the groundwork for future integration into high-fidelity simulations and experimental validation efforts.",
   imageUrl: "/homepage/recentPaper.png",
-  pdfUrl: "https://www.sciencedirect.com/science/article/pii/S095070512500615X",
-  category: "computing",
+  pdfUrl: "https://www.sciencedirect.com/science/article/pii/S2590174525002223",
+  category: "reactors",
 }
 
 export default function RecentResearch() {
@@ -50,7 +50,7 @@ export default function RecentResearch() {
         >
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300">
             <div className="flex flex-col">
-              <div className="relative h-[400px] w-full">
+              <div className="relative h-[600px] w-full">
                 <Image
                   src={paper.imageUrl}
                   alt={paper.title}
