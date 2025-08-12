@@ -7,7 +7,6 @@ import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@heroui/react"
 import { researchItems } from "@/data/research"
-import { IconTemperature } from "@tabler/icons-react"
 
 const topicsData = [
   {
