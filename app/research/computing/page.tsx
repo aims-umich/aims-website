@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@heroui/react"
 import { researchItems } from "@/data/research"
+import { IconTemperature } from "@tabler/icons-react"
 
 const topicsData = [
   {
@@ -45,7 +46,8 @@ const topicsData = [
 ]
 
 const recentPapers = researchItems
-  .filter(item => item.type === "publication" && item.group === "computing" && item.isRecent)
+  .sort((a, b) => b.timestamp - a.timestamp)
+  .filter(item => item.type === "publication" && item.group === "computing")
   .map(item => ({
     id: item.id,
     title: item.title,

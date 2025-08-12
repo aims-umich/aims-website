@@ -40,10 +40,7 @@ export default function ResearchDirectory() {
 
     return matchesCategory && (searchQuery ? matchesSearch : true)
   }).sort((a, b) => {
-    if (a.year !== b.year) {
-      return (b.year || 0) - (a.year || 0);
-    }
-    return a.title.localeCompare(b.title);
+    return b.timestamp - a.timestamp
   });
 
   const containerVariants = {
@@ -90,7 +87,7 @@ export default function ResearchDirectory() {
                 </div>
                 <div>
                   <p className="text-blue-michigan font-medium">Directory last updated</p>
-                  <p className="text-blue-michigan/70 text-sm">04-20-2025</p>
+                  <p className="text-blue-michigan/70 text-sm">08-11-2025</p>
                 </div>
               </div>
               

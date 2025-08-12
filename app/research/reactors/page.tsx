@@ -45,7 +45,8 @@ const topicsData = [
 ]
 
 const recentPapers = researchItems
-  .filter(item => item.type === "publication" && item.group === "reactors" && item.isRecent)
+  .sort((a, b) => b.timestamp - a.timestamp)
+  .filter(item => item.type === "publication" && item.group === "reactors")
   .map(item => ({
     id: item.id,
     title: item.title,
