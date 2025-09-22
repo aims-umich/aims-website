@@ -8,17 +8,19 @@ import { FileText, Users, BookOpen } from "lucide-react"
 import { Button } from "@heroui/react"
 
 const paper = {
-  title: "Nuclear microreactor transient and load-following control with deep reinforcement learning",
-  authors: ["Leo Tunkle", "Kamal Abdulraheem", "Linyu Lin", "Majdi I. Radaideh"],
-  journal: "Energy Conversion and Management: X",
+  title:
+    "Opening the AI black-box: Symbolic regression with Kolmogorov–Arnold Networks for advanced energy applications",
+  authors: ["Nataly R. Panczyk", "Omer F. Erdem", "Majdi I. Radaideh"],
+  journal: "Energy and AI",
   year: 2025,
-  doi: "10.1016/j.ecmx.2025.101090",
+  doi: "https://doi.org/10.1016/j.egyai.2025.100595",
   abstract:
-    "The economic feasibility of nuclear microreactors will depend on minimizing operating costs through advancements in autonomous control, especially when these microreactors are operating alongside other types of energy systems (e.g., renewable energy). This study explores the application of deep reinforcement learning (RL) for real-time drum control in microreactors, exploring performance in regard to load-following scenarios. By leveraging a point kinetics model with thermal and xenon feedback, we first establish a baseline using a single-output RL agent, then compare it against a traditional proportional–integral–derivative (PID) controller. This study demonstrates that RL controllers, including both single- and multi-agent RL (MARL) frameworks, can achieve load-following performance similar or even superior to traditional PID control across a range of load-following scenarios. In short transients, the RL agent was able to reduce the tracking error rate in comparison to PID by one half to one third. Over extended 300 min load-following scenarios in which xenon feedback becomes a dominant factor, PID maintained better accuracy, but RL still remained within a 1% error margin despite being trained only on short-duration scenarios. This highlights RL’s strong ability to generalize and extrapolate to longer, more complex transients, affording substantial reductions in training costs and reduced overfitting. Furthermore, when control was extended to multiple drums, MARL enabled independent drum control as well as maintained reactor symmetry constraints without sacrificing performance—an objective that standard single-agent RL could not learn. We also found that the RL controllers were able to maintain lower error rates than PID, despite increasing levels of Gaussian noise being added to the power measurements, doing so with at least 10% and upwards of 150% less control effort. These findings illustrate RL’s potential for autonomous nuclear reactor control, laying the groundwork for future integration into high-fidelity simulations and experimental validation efforts.",
+    "While most modern machine learning methods offer speed and accuracy, few promise interpretability or explainability—two key features necessary for highly sensitive industries, like medicine, finance, and engineering. Using eight datasets representative of one especially sensitive industry, nuclear power, this work compares a traditional feedforward neural network (FNN) to a Kolmogorov–Arnold Network (KAN). We consider not only model performance and accuracy, but also interpretability through model architecture and explainability through a post-hoc SHapley Additive exPlanations (SHAP) analysis, a game-theory-based feature importance method. In terms of accuracy, we find KANs and FNNs comparable across all datasets when output dimensionality is limited. KANs, which transform into symbolic equations after training, yield perfectly interpretable models, while FNNs remain black-boxes. Finally, using the post-hoc explainability results from Kernel SHAP, we find that KANs learn real, physical relations from experimental data, while FNNs simply produce statistically accurate results. Overall, this analysis finds KANs a promising alternative to traditional machine learning methods, particularly in applications requiring both accuracy and comprehensibility.",
   imageUrl: "/homepage/recentPaper.png",
-  pdfUrl: "https://www.sciencedirect.com/science/article/pii/S2590174525002223",
+  pdfUrl:
+    "https://www.sciencedirect.com/science/article/pii/S2666546825001272?via%3Dihub",
   category: "reactors",
-}
+};
 
 export default function RecentResearch() {
   const ref = useRef(null)
