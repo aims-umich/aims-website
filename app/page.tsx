@@ -12,6 +12,7 @@ import FloatingTop from "@/components/FloatingTop";
 import AboutUs from "@/components/AboutUs";
 import CoreValues from "@/components/Values";
 import RecentResearch from "@/components/RecentResearch";
+import Department from "@/components/Department";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <div className="max-w-7xl w-full">
         <Hero />
         <AboutUs />
+        <Department />
         <CoreValues />
         <News />
         <RecentResearch />
