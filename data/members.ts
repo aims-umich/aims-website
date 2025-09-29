@@ -791,6 +791,47 @@ export const teamMembers: TeamMember[] = [
     linkedin: "http://www.linkedin.com/in/milo-parrott",
     slug: "miloparr",
   },
+  {
+    id: "hsiencc",
+    name: "Andrew Chou",
+    email: "hsiencc@umich.edu",
+    status: "Undergraduate",
+    role: "Undergraduate",
+    joinedDate: "June 2025",
+    imageUrl: "/people/hsiencc.jpg",
+    heroImageUrl: "",
+    bio: "Hello! This is Andrew Chou, an undergraduate student studying mechanical engineering with a minor in computer science. Along with other project teams and research projects, I’m also currently a member of the computational fluid dynamics analysis team at the Artificial Intelligence and Multiphysics Simulations (AIMS) lab. I have a strong interest in fluid mechanics, heat transfer, and process automation, and I have had the privilege of applying my skillset in these fields to the research group led by Professor Majdi Radaideh. I’m also part of the aerodynamics division of the UofM solar car team, as well as the thermal systems designer in my research team with the UofM EV Center. Apart from schoolwork, I enjoy music performance, photography, and volleyball. You may also catch me running on Sunday mornings, in corners of Ann Arbor I don’t even know exist right now!",
+    interests: [
+      "Reactor Design and Simuation",
+      "Systems Thermal Analysis",
+      "Fluid Mechanics",
+      "Process Automation",
+    ],
+    education: ["University of Michigan"],
+    degrees: ["B.S.E in Mechanical Engineering"],
+    department: "Department of Mechanical Engineering",
+    slug: "hsiencc",
+  },
+  {
+    id: "arsha",
+    name: "Arsha Witoelar",
+    email: "arsha@umich.edu",
+    status: "Undergraduate",
+    role: "Undergraduate",
+    joinedDate: "June 2025",
+    imageUrl: "/people/arsha.jpg",
+    heroImageUrl: "",
+    bio: "I am Arsha Witoelar, an undergraduate student in Mechanical Engineering. At AIMS, I’m a member of the computational fluid dynamics team. As part of this team, I have been able to cultivate my skills in areas of interest such as fluid mechanics and data analysis. I also have a strong interest in energy generation, which is why I am also in Wolverine Offshore Wind, a student-led project team focused on wind turbines. I love learning all that I can, so I have also been involved in other activities like Formula SAE and martial arts.",
+    interests: [
+      "Multiphysics Simulations",
+      "Reactor Design and Analysis",
+      "Data Analysis"
+    ],
+    education: ["University of Michigan"],
+    degrees: ["B.S.E in Mechanical Engineering"],
+    department: "Department of Mechanical Engineering",
+    slug: "arsha",
+  },
 ];
 
 // easy copy + paste

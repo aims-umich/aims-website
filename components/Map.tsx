@@ -91,12 +91,20 @@ const mapData = [
     end: { lat: 3.139, lng: 101.6869, country: "Kuala Lumpur, Malaysia" },
   },
   {
+    start: { lat: 24.8138, lng: 120.9675, country: "Hsinchu, Taiwan" },
+    end: { lat: 3.139, lng: 101.6869, country: "Kuala Lumpur, Malaysia" },
+  },
+  {
     start: { lat: 3.139, lng: 101.6869, country: "Kuala Lumpur, Malaysia" },
     end: { lat: 14.5864, lng: 121.1747, country: "Antipolo, Philippines" },
   },
   {
-    start: { lat: 3.139, lng: 101.6869, country: "Kuala Lumpur, Malaysia" },
-    end: { lat: 23.8103, lng: 90.4125, country: "Dhaka, Bangladesh" },
+    start: { lat: 6.1944, lng: 106.8229, country: "Jakarta, Indonesia" },
+    end: { lat: 3.139, lng: 101.6869, country: "Kuala Lumpur, Malaysia" },
+  },
+  {
+    start: { lat: 23.8103, lng: 90.4125, country: "Dhaka, Bangladesh" },
+    end: { lat: 25.044, lng: 102.7053, country: "Kunming, China" },
   },
   {
     start: { lat: 23.8103, lng: 90.4125, country: "Dhaka, Bangladesh" },
