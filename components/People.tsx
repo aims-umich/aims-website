@@ -24,7 +24,11 @@ export const orgData: OrgTreeData = {
           role: "Research Scientist (Reactors Lead)",
           imageUrl: "/people/hyungjki.jpg",
           bio: "",
-          keywords: ["Multiphysics Simulations", "Reinforcement Learning", "Thermal Hydraulics Code"],
+          keywords: [
+            "Multiphysics Simulations",
+            "Reinforcement Learning",
+            "Thermal Hydraulics Code",
+          ],
           children: [
             {
               id: "eaheart",
@@ -32,7 +36,11 @@ export const orgData: OrgTreeData = {
               status: "PhD",
               role: "PhD Student",
               imageUrl: "/people/eaheart.jpg",
-              keywords: ["Reactor Design and Safety", "Computational Fluid Dynamics", "Multifidelity Neural Networks"],
+              keywords: [
+                "Reactor Design and Safety",
+                "Computational Fluid Dynamics",
+                "Multifidelity Neural Networks",
+              ],
               children: [
                 {
                   id: "davidgw",
@@ -40,17 +48,13 @@ export const orgData: OrgTreeData = {
                   status: "Undergraduate",
                   role: "Undergraduate",
                   imageUrl: "/people/davidgw.jpg",
-                  keywords: ["Fission Reactor Optimization", "Commercial Fusion Power", "Computational Physics"],
+                  keywords: [
+                    "Fission Reactor Optimization",
+                    "Commercial Fusion Power",
+                    "Computational Physics",
+                  ],
                 },
-                {
-                  id: "jacc",
-                  name: "Jacob T. Cooper",
-                  status: "Undergraduate",
-                  role: "Undergraduate",
-                  imageUrl: "/people/jacc.jpg",
-                  keywords: ["Thermal Hydraulics", "CFD", "Machine Learning"],
-                },
-              ]
+              ],
             },
             {
               id: "npanczyk",
@@ -58,7 +62,11 @@ export const orgData: OrgTreeData = {
               status: "PhD",
               role: "PhD Student",
               imageUrl: "/people/npanczyk.JPG",
-              keywords: ["Explainable AI", "Interpretable AI", "Nuclear Energy"],
+              keywords: [
+                "Explainable AI",
+                "Interpretable AI",
+                "Nuclear Energy",
+              ],
             },
             {
               id: "oferdem",
@@ -66,25 +74,11 @@ export const orgData: OrgTreeData = {
               status: "PhD",
               role: "PhD Student",
               imageUrl: "/people/oferdem.png",
-              keywords: ["Multiobjective Optimization", "Neutronics Simulations", "Core Design"],
-              children: [
-                {
-                  id: "clairekm",
-                  name: "Claire Kaufman",
-                  status: "Undergraduate",
-                  role: "Undergraduate",
-                  imageUrl: "/people/clairekm.jpg",
-                  keywords: ["Reactor design", "Core design", "Computer Simulation"],
-                },
-                {
-                  id: "jelenes",
-                  name: "Jazmin Elenes",
-                  status: "Undergraduate",
-                  role: "Undergraduate",
-                  imageUrl: "/people/jelenes.jpg",
-                  keywords: ["Reactor Design", "Reactor Core Optimization", "Multiphysics Simulations"],
-                },
-              ]
+              keywords: [
+                "Multiobjective Optimization",
+                "Neutronics Simulations",
+                "Core Design",
+              ],
             },
             {
               id: "sarmiento",
@@ -92,7 +86,19 @@ export const orgData: OrgTreeData = {
               status: "Graduate Student",
               role: "MS Student",
               imageUrl: "/people/sarmiento.jpg",
-              keywords: ["Multiphysics simulations", "Reactor Design", "Hybrid RL-metaheuristic"],
+              keywords: [
+                "Multiphysics simulations",
+                "Reactor Design",
+                "Hybrid RL-metaheuristic",
+              ],
+            },
+            {
+              id: "cfruble",
+              name: "Colin Ruble",
+              status: "Graduate Student",
+              role: "MS Student",
+              imageUrl: "/people/cfruble.jpg",
+              keywords: ["Multiphysics Simulations", "Reactor Design"],
             },
           ],
         },
@@ -102,7 +108,12 @@ export const orgData: OrgTreeData = {
           status: "Group Lead",
           role: "MICDE Research Scholar and Postdoctoral Fellow (Computing Lead)",
           imageUrl: "/people/malradai.jpg",
-          keywords: ["Alternative Fuel Combustion and Certification", "Renewable Energy", "Machine Learning", "Large Language Models"],
+          keywords: [
+            "Alternative Fuel Combustion and Certification",
+            "Renewable Energy",
+            "Machine Learning",
+            "Large Language Models",
+          ],
           children: [
             {
               id: "shebromi",
@@ -110,7 +121,11 @@ export const orgData: OrgTreeData = {
               status: "PhD",
               role: "PhD Student",
               imageUrl: "/people/shebromi.png",
-              keywords: ["Reactor Design", "Machine Learning" ,"Radiation Detection"],
+              keywords: [
+                "Reactor Design",
+                "Machine Learning",
+                "Radiation Detection",
+              ],
             },
             {
               id: "almulhim",
@@ -119,66 +134,118 @@ export const orgData: OrgTreeData = {
               role: "PhD Student",
               imageUrl: "/people/almulhim.png",
               bio: "",
-              keywords: ["Monte Carlo Mathods", "Multiphysics simulations", "Machine Learning"],
+              keywords: [
+                "Monte Carlo Mathods",
+                "Multiphysics simulations",
+                "Machine Learning",
+              ],
             },
             {
-              id: "namanb",
-              name: "Naman Bhargava",
-              status: "Graduate",
-              role: "MS Student",
-              imageUrl: "/people/namanb.jpg",
-              keywords: ["Large Language Models", "Text-to-Image Finetuning", "Natural Language Processing"],
+              id: "jeremoon",
+              name: "Jeremy Moon",
+              status: "Undergraduate",
+              role: "Undergraduate",
+              imageUrl: "/people/jeremoon.jpeg",
+              keywords: ["Artificial Intelligence", "Machine Learning"],
               children: [
                 {
-                  id: "asgala",
-                  name: "Andre Gala-Garza",
-                  status: "Graduate",
-                  role: "MS Student",
-                  imageUrl: "/people/asgala.jpg",
-                  keywords: ["Natural Language Processing (NLP)", "Artificial Intelligence (AI)"],
-                },
-                {
-                  id: "akutira",
-                  name: "Arvind Kutirakulam",
+                  id: "yjson",
+                  name: "Emma Son",
                   status: "Undergraduate",
                   role: "Undergraduate",
-                  imageUrl: "/people/akutira.png",
-                  keywords: ["Large Language Models", "Social Media Computing", "Natural Language Processing"],
-                },
-                {
-                  id: "jeremoon",
-                  name: "Jeremy Moon",
-                  status: "Undergraduate",
-                  role: "Undergraduate",
-                  imageUrl: "/people/jeremoon.jpeg",
-                  keywords: ["Artificial Intelligence", "Machine Learning"],
+                  imageUrl: "/people/yjson.jpg",
+                  keywords: [
+                    "Applied Data Science",
+                    "Artificial Intelligence",
+                    "Machine Learning",
+                  ],
                 },
               ],
             },
             {
-              id: "shomas",
-              name: "Shoma Sawa",
+              id: "asgala",
+              name: "Andre Gala-Garza",
               status: "Graduate",
               role: "MS Student",
-              imageUrl: "/people/shomas.jpg",
-              keywords: ["Large Language Models", "Natural Language Processing", "Deep Learning"],
+              imageUrl: "/people/asgala.jpg",
+              keywords: [
+                "Natural Language Processing (NLP)",
+                "Artificial Intelligence (AI)",
+              ],
               children: [
                 {
-                  id: "huawens",
-                  name: "Huawen Shen",
+                  id: "shahyug",
+                  name: "Yug Shah",
                   status: "Undergraduate",
                   role: "Undergraduate",
-                  imageUrl: "/people/huawens.jpg",
-                  keywords: ["Deep Learning", "Backend Development"],
+                  imageUrl: "/people/shahyug.jpeg",
+                  keywords: [
+                    "Full-Stack Development",
+                    "Artificial Intelligence",
+                    "Computer Vision",
+                  ],
                 },
+              ],
+            },
+            {
+              id: "qasiddiq",
+              name: "Qasim Siddiq",
+              status: "Graduate",
+              role: "MS Student",
+              imageUrl: "/people/qasiddiq.jpg",
+              keywords: ["Neutronics", "Reactor Design", "Machine Learning"],
+              children: [
                 {
-                  id: "yikuny",
-                  name: "Yikun Yang",
+                  id: "clairekm",
+                  name: "Claire Kaufman",
                   status: "Undergraduate",
                   role: "Undergraduate",
-                  imageUrl: "/people/yikuny.jpg",
-                  keywords: ["Full Stack Development", "Applied Data Science"],
+                  imageUrl: "/people/clairekm.jpg",
+                  keywords: [
+                    "Reactor design",
+                    "Core design",
+                    "Computer Simulation",
+                  ],
                 },
+              ],
+            },
+            {
+              id: "miloparr",
+              name: "Milo Parrott",
+              status: "Graduate",
+              role: "MS Student",
+              imageUrl: "/people/miloparr.png",
+              keywords: [
+                "Plasma Physics Simulation",
+                "Machine Learning",
+                "Pulsed Power",
+              ],
+            },
+            {
+              id: "arsha",
+              name: "Arsha Witoelar",
+              status: "Undergraduate",
+              role: "Undergraduate",
+              imageUrl: "/people/arsha.jpg",
+              bio: "",
+              keywords: [
+                "Multiphysics Simulations",
+                "Reactor Design and Analysis",
+                "Data Analysis",
+              ],
+            },
+            {
+              id: "hsiencc",
+              name: "Andrew Chou",
+              status: "Undergraduate",
+              role: "Undergraduate",
+              imageUrl: "/people/hsiencc.jpg",
+              bio: "",
+              keywords: [
+                "Reactor Design and Simuation",
+                "Systems Thermal Analysis",
+                "Fluid Mechanics",
+                "Process Automation",
               ],
             },
           ],
@@ -189,7 +256,11 @@ export const orgData: OrgTreeData = {
           status: "Group Lead",
           role: "PhD student (Controls Lead)",
           imageUrl: "/people/tunkleo.jpg",
-          keywords: ["Reinforcement Learning", "Reactor Control", "Reactor Modeling"],
+          keywords: [
+            "Reinforcement Learning",
+            "Reactor Control",
+            "Reactor Modeling",
+          ],
           children: [
             {
               id: "abkamal",
@@ -197,7 +268,12 @@ export const orgData: OrgTreeData = {
               status: "Postdoc",
               role: "Schmidt AI in Science Postdoctoral Fellow",
               imageUrl: "/people/abkamal.jpg",
-              keywords: ["Autonomous Control System", "Integrated Energy System", "Thermal Hydraulics", "Modeling and Simulation"],
+              keywords: [
+                "Autonomous Control System",
+                "Integrated Energy System",
+                "Thermal Hydraulics",
+                "Modeling and Simulation",
+              ],
             },
             {
               id: "lprotche",
@@ -205,7 +281,25 @@ export const orgData: OrgTreeData = {
               status: "PhD Student",
               role: "PhD Student",
               imageUrl: "/people/lprotche.jpg",
-              keywords: ["Autonomous Radiation Mapping", "Explainable AI", "Multiphysics Simulations"],
+              keywords: [
+                "Autonomous Radiation Mapping",
+                "Explainable AI",
+                "Multiphysics Simulations",
+              ],
+              children: [
+                {
+                  id: "sshamant",
+                  name: "Shamanth Shastry",
+                  status: "Undergraduate",
+                  role: "Undergraduate",
+                  imageUrl: "/people/sshamant.jpeg",
+                  keywords: [
+                    "Machine Learning",
+                    "Radiation Mapping",
+                    "Data Analysis",
+                  ],
+                },
+              ],
             },
             {
               id: "nucleai",
@@ -213,7 +307,11 @@ export const orgData: OrgTreeData = {
               status: "PhD Student",
               role: "PhD Student",
               imageUrl: "/people/nucleai.jpg",
-              keywords: ["Digital Twins", "Uncertainty Quantification", "Systems Engineering"],
+              keywords: [
+                "Digital Twins",
+                "Uncertainty Quantification",
+                "Systems Engineering",
+              ],
             },
             {
               id: "unabila",
@@ -221,15 +319,24 @@ export const orgData: OrgTreeData = {
               status: "PhD Student",
               role: "PhD Student",
               imageUrl: "/people/unabila.png",
-               keywords: ["Nuclear Energy", "Advanced Reactor Design", "Machine Learning", "Digital Twin"],
+              keywords: [
+                "Nuclear Energy",
+                "Advanced Reactor Design",
+                "Machine Learning",
+                "Digital Twin",
+              ],
             },
             {
-              id: "njotwani",
-              name: "Nitin Jotwani",
-              status: "Graduate Student",
+              id: "pbahl",
+              name: "Pranav Bahl",
+              status: "Graduate",
               role: "MS Student",
-              imageUrl: "/people/njotwani.jpg",
-              keywords: ["Control and Planning", "Computer Vision/Robot Perception", "Vision Language Models"],
+              imageUrl: "/people/pbahl.jpg",
+              keywords: [
+                "Multiphysics Simulations",
+                "Dynamical Systems",
+                "Interpretable ML/AI",
+              ],
             },
           ],
         },
@@ -239,7 +346,12 @@ export const orgData: OrgTreeData = {
           status: "Group Lead",
           role: "PhD student (HPC Lead)",
           imageUrl: "/people/myerspat.jpg",
-          keywords: ["Transport methods", "Scientific computing", "Reactor physics", "Reduced order modeling"],
+          keywords: [
+            "Transport methods",
+            "Scientific computing",
+            "Reactor physics",
+            "Reduced order modeling",
+          ],
           children: [
             {
               id: "aims01-machine",
@@ -262,7 +374,7 @@ export const orgData: OrgTreeData = {
       ],
     },
   ],
-}
+};
 
 export interface TeamMember {
   id: string
