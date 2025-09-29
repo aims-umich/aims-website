@@ -43,6 +43,10 @@ const mapData = [
     end: { lat: 41.4817, lng: -81.8001, country: "Lakewood, OH, USA" },
   },
   {
+    start: { lat: 40.839, lng: -74.275, country: "Caldwell, NJ, USA" },
+    end: { lat: 41.4817, lng: -81.8001, country: "Lakewood, OH, USA" },
+  },
+  {
     start: { lat: 36.1627, lng: -86.7816, country: "Nashville, TN, USA" },
     end: { lat: 33.5207, lng: -86.8025, country: "Birmingham, AL, USA" },
   },
@@ -113,6 +117,10 @@ const mapData = [
   {
     start: { lat: 26.9124, lng: 75.7873, country: "Jaipur, India" },
     end: { lat: 30.3165, lng: 78.0322, country: "Dehradun, India" },
+  },
+  {
+    start: { lat: 12.9629, lng: 77.5775, country: "Bangalore, India" },
+    end: { lat: 28.7041, lng: 77.1025, country: "Delhi, India" },
   },
   {
     start: { lat: 28.7041, lng: 77.1025, country: "Delhi, India" },

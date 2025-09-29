@@ -58,7 +58,7 @@ const defaultTips: Tip[] = [
     image: "/gallery/2_Meeting_Cancelled.jpeg",
   },
   {
-    text: "Majdi’s with full confidence while bragging about how much student loves him in the classroom because of his engaging style: \"I’ve gotten animals to pose for photos with me, you really think engaging students is gonna be a challenge?\"",
+    text: 'Majdi’s with full confidence while bragging about how much student loves him in the classroom because of his engaging style: "I’ve gotten animals to pose for photos with me, you really think engaging students is gonna be a challenge?"',
     image: "/gallery/3_Majdi-Engaging-Style.jpg",
   },
   {
@@ -74,7 +74,7 @@ const defaultTips: Tip[] = [
     image: "/gallery/6_Nabila-Japan.jpg",
   },
   {
-    text: "AIMS students and alumni snapped a photo in Idaho Falls during a conference. Meanwhile, Majdi stood there, baffled, wondering: \"Have I ever seen them this happy before? Is it me... or is Idaho Falls way more fun than Ann Arbor?\" Tough call. What do you think?",
+    text: 'AIMS students and alumni snapped a photo in Idaho Falls during a conference. Meanwhile, Majdi stood there, baffled, wondering: "Have I ever seen them this happy before? Is it me... or is Idaho Falls way more fun than Ann Arbor?" Tough call. What do you think?',
     image: "/gallery/7_Idaho-Smiles.jpeg",
   },
   {
@@ -86,7 +86,7 @@ const defaultTips: Tip[] = [
     image: "/gallery/9_Andre-Misspell.jpg",
   },
   {
-    text: "Logan, keeping a straight face like a true professional, as Majdi cheerfully announces he's about to whip up some \"easy\" CAD drawings — meanwhile, Logan’s never touched CAD in his life and is internally screaming.",
+    text: 'Logan, keeping a straight face like a true professional, as Majdi cheerfully announces he\'s about to whip up some "easy" CAD drawings — meanwhile, Logan’s never touched CAD in his life and is internally screaming.',
     image: "/gallery/10_Logan-CAD.jpg",
   },
   {
@@ -173,7 +173,23 @@ const defaultTips: Tip[] = [
     text: "And we remain friends and professionals! Thank you from the AIMS family!",
     image: "/gallery/31_AndWeRemainFriends.jpg",
   },
-]
+  {
+    text: "",
+    image: "/gallery/32_Qasiddiq.jpeg",
+  },
+  {
+    text: "",
+    image: "/gallery/33_Shahyug.jpeg",
+  },
+  {
+    text: "",
+    image: "/gallery/34_Miloparr.jpg",
+  },
+  {
+    text: "Shamanth when he sees an unusually large dog behind him",
+    image: "/gallery/35_Sshamant.jpeg",
+  },
+];
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
