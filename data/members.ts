@@ -775,7 +775,7 @@ export const teamMembers: TeamMember[] = [
     role: "MS Student",
     joinedDate: "August 2025",
     imageUrl: "/people/miloparr.png",
-    heroImageUrl: "/heroImages/miloparr.jpeg",
+    heroImageUrl: "/heroImages/miloparr.png",
     bio: "I am a graduate student in Nuclear Engineering and Radiological Sciences at the University of Michigan and serve as a Graduate Student Instructor for Nuclear Engineering Senior Design. My research and project experience span plasma physics, pulsed power, and high-performance computing, with a strong emphasis on developing machine learning surrogates for plasma physics simulations. I have also contributed to experimental and computational efforts involving high-power microwave devices, pulsed power generators, and diagnostic design for advanced fusion concepts. Outside of academics, I enjoy bikepacking, hiking, rock climbing, and a variety of other outdoor activities. ",
     interests: [
       "Plasma Physics Simulation",
