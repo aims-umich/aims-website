@@ -97,7 +97,7 @@ export const orgData: OrgTreeData = {
               name: "Colin Ruble",
               status: "Graduate Student",
               role: "MS Student",
-              imageUrl: "/people/cfruble.jpg",
+              imageUrl: "/people/cfruble.JPG",
               keywords: ["Multiphysics Simulations", "Reactor Design"],
             },
           ],
