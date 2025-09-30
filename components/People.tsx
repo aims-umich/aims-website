@@ -153,7 +153,7 @@ export const orgData: OrgTreeData = {
                   name: "Emma Son",
                   status: "Undergraduate",
                   role: "Undergraduate",
-                  imageUrl: "/people/yjson.jpg",
+                  imageUrl: "/people/yjson.JPG",
                   keywords: [
                     "Applied Data Science",
                     "Artificial Intelligence",

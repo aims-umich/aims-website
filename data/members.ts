@@ -713,7 +713,7 @@ export const teamMembers: TeamMember[] = [
     status: "Undergraduate",
     role: "Undergraduate",
     joinedDate: "September 2025",
-    imageUrl: "/people/yjson.jpg",
+    imageUrl: "/people/yjson.JPG",
     heroImageUrl: "/heroImages/yjson.jpg",
     bio: "I am an undergraduate student at the University of Michigan pursuing a Bachelor of Science in Data Science. I am focused on research involving data collection and computer programming. I am particularly interested in the application of data science to a variety of fields and its intersection with artificial intelligence.",
     interests: [
@@ -839,7 +839,7 @@ export const teamMembers: TeamMember[] = [
     status: "Graduate",
     role: "MS Student",
     joinedDate: "August 2025",
-    imageUrl: "/people/cfruble.jpg",
+    imageUrl: "/people/cfruble.JPG",
     heroImageUrl: "/heroImages/cfruble.jpg",
     bio: "Colin Ruble is a Master’s student in Nuclear Engineering and Radiological Sciences at the University of Michigan.  He holds a dual B.S. in Nuclear and Mechanical Engineering from Rensselaer Polytechnic Institute.  Previously, he worked on the US DOE Consent Based Siting program for the RPI consortia where he focused on modeling reactor fuel cycles and spent fuel cask transportation.  He also interned during the summer of 2024 for Naval Nuclear Laboratory.  His primary research interests are in multiphysics simulations and reactor design optimizations.  Outside of class, Colin enjoys reading, going hiking, eating ice cream, and playing video games.",
     interests: ["Multiphysics Simulations", "Reactor Design"],
