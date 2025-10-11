@@ -39,6 +39,14 @@ const mapData = [
     end: { lat: 42.2808, lng: -83.743, country: "Ann Arbor, MI, USA" },
   },
   {
+    start: { lat: 42.6064, lng: -83.1498, country: "Troy, MI, USA" },
+    end: { lat: 42.2808, lng: -83.743, country: "Ann Arbor, MI, USA" },
+  },
+  {
+    start: { lat: 44.7629, lng: -85.6210, country: "Traverse City, MI, USA" },
+    end: { lat: 42.6064, lng: -83.1498, country: "Troy, MI, USA" },
+  },
+  {
     start: { lat: 42.1103, lng: -88.0342, country: "Palatine, IL, USA" },
     end: { lat: 41.4817, lng: -81.8001, country: "Lakewood, OH, USA" },
   },

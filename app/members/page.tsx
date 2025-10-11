@@ -18,7 +18,7 @@ export default function TeamShowcase() {
 
   const filteredMembers = teamMembers.filter((member) => {
     const matchesCategory =
-      (activeCategory === "all") ||
+      (activeCategory === "all" && member.status !== "Alumni") ||
       (activeCategory === "pi" && member.status === "Principal Investigator") ||
       (activeCategory === "scientists" && (member.status === "Research Scientist" || member.status === "Postdoc")) ||
       (activeCategory === "phd/graduate" && (member.status === "PhD" || member.status === "Graduate")) ||
