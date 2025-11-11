@@ -92,10 +92,16 @@ export default function NewsArticlePage() {
               <Image src={article.imageUrl} alt={article.title} fill className="object-cover" />
             </div>
 
-            {article.imageUrl2 && 
-              <div className="relative h-96 md:h-[500px] rounded-xl overflow-hidden mb-12 shadow-lg">
-                <Image src={article.imageUrl2} alt={article.title} fill className="object-cover" />
-              </div> 
+            {article.images && article.images.map((url, index) => (
+                <div key={index} className="relative h-96 md:h-[500px] rounded-xl overflow-hidden mb-12 shadow-lg">
+                  <Image
+                    src={url}
+                    alt={article.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))
             }
 
             <div className="prose prose-lg max-w-none">
