@@ -9,16 +9,22 @@ import { Button } from "@heroui/react"
 
 const paper = {
   title:
-    "Opening the AI black-box: Symbolic regression with Kolmogorov–Arnold Networks for advanced energy applications",
-  authors: ["Nataly R. Panczyk", "Omer F. Erdem", "Majdi I. Radaideh"],
-  journal: "Energy and AI",
+    "Sensitivity analysis and uncertainty propagation of the time to onset of natural circulation in air ingress accidents",
+  authors: [
+    "Meredith Eaheart",
+    "Jacob Cooper",
+    "Molly Ross",
+    "Nate See",
+    "Majdi I. Radaideh",
+  ],
+  journal: "Nuclear Engineering and Design",
   year: 2025,
-  doi: "https://doi.org/10.1016/j.egyai.2025.100595",
+  doi: "https://doi.org/10.1016/j.nucengdes.2025.114510",
   abstract:
-    "While most modern machine learning methods offer speed and accuracy, few promise interpretability or explainability—two key features necessary for highly sensitive industries, like medicine, finance, and engineering. Using eight datasets representative of one especially sensitive industry, nuclear power, this work compares a traditional feedforward neural network (FNN) to a Kolmogorov–Arnold Network (KAN). We consider not only model performance and accuracy, but also interpretability through model architecture and explainability through a post-hoc SHapley Additive exPlanations (SHAP) analysis, a game-theory-based feature importance method. In terms of accuracy, we find KANs and FNNs comparable across all datasets when output dimensionality is limited. KANs, which transform into symbolic equations after training, yield perfectly interpretable models, while FNNs remain black-boxes. Finally, using the post-hoc explainability results from Kernel SHAP, we find that KANs learn real, physical relations from experimental data, while FNNs simply produce statistically accurate results. Overall, this analysis finds KANs a promising alternative to traditional machine learning methods, particularly in applications requiring both accuracy and comprehensibility.",
-  imageUrl: "/homepage/recentPaper.png",
+    "This study investigates the time to onset of natural circulation (ONC) during a depressurized loss of forced cooling (DLOFC) event in a high-temperature gas reactor (HTGR). Using a fully automated Ansys Fluent simulation framework with PyFluent scripting, 500 CFD cases were generated with perturbed thermal and material properties. Surrogate models (random forests and neural networks) were trained to predict ONC time and post-ONC temperature, enabling global sensitivity analysis (SA) via Morris screening, Sobol indices, Fourier Amplitude Sensitivity Test, and regional sensitivity analysis. Monte Carlo-based uncertainty quantification was performed using the trained surrogates. Results showed that the heated section temperature was the dominant factor influencing ONC timing, with negligible contributions from heat transfer coefficient (HTC) and other thermophysical properties. In contrast, post-ONC temperature was influenced by both initial temperature and HTC. Sensitivity analysis revealed signs of nonlinear behavior and potential interactions between these parameters. The neural network achieved a test R^2 of 0.986 and MAE of 64 s for ONC timing, and an R^2 of 0.993 and MAE of 10 K for post-ONC temperature. While the random forest performed slightly worse, it still achieved a test R^2 of 0.985 and MAE of 64 s for ONC timing, and an R^2 of 0.964 with MAE of 24 K for post-ONC temperature. Using these surrogate models, the uncertainty propagation results verified the influence of the primary input parameters identified by sensitivity analysis on ONC timing and post-ONC temperature.",
+  imageUrl: "/homepage/recentPaper.jpg",
   pdfUrl:
-    "https://www.sciencedirect.com/science/article/pii/S2666546825001272?via%3Dihub",
+    "https://www.sciencedirect.com/science/article/pii/S0029549325006879?via%3Dihub",
   category: "reactors",
 };
 

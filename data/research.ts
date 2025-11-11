@@ -650,6 +650,42 @@ export const researchItems: ResearchItem[] = [
     isRecent: true,
   },
   {
+    id: "computing-14",
+    type: "publication",
+    title:
+      "Opening the AI black-box: Symbolic regression with Kolmogorov–Arnold Networks for advanced energy applications",
+    authors: ["Nataly R. Panczyk", "Omer F. Erdem", "Majdi I. Radaideh"],
+    journal: "Energy and AI",
+    year: 2025,
+    timestamp: 1757649600,
+    doi: "https://doi.org/10.1016/j.egyai.2025.100595",
+    group: "computing",
+    abstract:
+      "While most modern machine learning methods offer speed and accuracy, few promise interpretability or explainability—two key features necessary for highly sensitive industries, like medicine, finance, and engineering. Using eight datasets representative of one especially sensitive industry, nuclear power, this work compares a traditional feedforward neural network (FNN) to a Kolmogorov–Arnold Network (KAN). We consider not only model performance and accuracy, but also interpretability through model architecture and explainability through a post-hoc SHapley Additive exPlanations (SHAP) analysis, a game-theory-based feature importance method. In terms of accuracy, we find KANs and FNNs comparable across all datasets when output dimensionality is limited. KANs, which transform into symbolic equations after training, yield perfectly interpretable models, while FNNs remain black-boxes. Finally, using the post-hoc explainability results from Kernel SHAP, we find that KANs learn real, physical relations from experimental data, while FNNs simply produce statistically accurate results. Overall, this analysis finds KANs a promising alternative to traditional machine learning methods, particularly in applications requiring both accuracy and comprehensibility.",
+    imageUrl: "/research-directory/computing/computing-14.png",
+    pdfUrl:
+      "https://www.sciencedirect.com/science/article/pii/S2666546825001272?via%3Dihub",
+    isRecent: true,
+  },
+  {
+    id: "computing-15",
+    type: "publication",
+    title:
+      "A Bayesian ensemble approach for improved sustainable aviation fuel modeling",
+    authors: ["Mohammed I. Radaideh", "Majdi I. Radaideh", "Angela Violi"],
+    journal: "Energy Conversion and Management: X",
+    year: 2025,
+    timestamp: 1759550400,
+    doi: "https://doi.org/10.1016/j.nucengdes.2025.114510",
+    group: "computing",
+    abstract:
+      "In this work, we introduce a new methodology to combine the available methods to predict the properties of complex hydrocarbon mixtures such as aviation fuels. Due to the complexity of aviation fuels, the available methods perform well individually on some of the experimental observations and vice versa on others when a surrogate aviation fuel is defined and used. To this end, we introduce a new ensemble model based on the existing methods that combine and weigh their predictions. We employ the probabilistic Bayesian approach to predict aviation fuel properties with confidence levels. This is necessary because the available experimental data for aviation fuels is generally limited, which leads to overfitting. We adopt both “interpretable” Bayesian regression and a more “black-box” approach to Bayesian neural networks. An ensemble of predictive methods provided better predictions than the individual methods with robust confidence levels for three properties considered: mass density, kinematic viscosity, and flash point. A significant reduction in the mean absolute percentage error was obtained for mass density predictions, from 1.25% to 0.57% and 0.42%, using the Bayesian linear regression (BLR) and Bayesian Neural Network (BNN), respectively. The error in kinematic viscosity predictions was reduced from 17.25% to 9.02% and 6.79% using BLR and BNN, respectively. The error in flash point predictions is reduced from 9.04% to 5.83% by BLR and to 5.51% by BNN. The importance of the methods in the ensemble did not fully follow their individual performance, where the accurate models may not be the most important. The ensemble approach allows for the inclusion of new methods, even if they are slightly less accurate. This methodology can be extended to predict other aviation fuel properties and incorporate any predictive model. It also offers a way to generate valid training data for generative Artificial Intelligence (AI) models, helping to address the scarcity of aviation fuel data.",
+    imageUrl: "/research-directory/computing/computing-15.jpg",
+    pdfUrl:
+      "https://www.sciencedirect.com/science/article/pii/S2666546825001272?via%3Dihub",
+    isRecent: true,
+  },
+  {
     id: "controls-1",
     type: "publication",
     title:
