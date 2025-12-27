@@ -1,11 +1,29 @@
-"use client"
+"use client";
 import React from "react";
+import { supabase } from "../lib/supabaseClient";
 
 const JoinUs = () => {
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   console.log("Form submitted... handle later");
-  // };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const message = formData.get("message") as string;
+
+    const { error } = await supabase.from("form_submissions").insert([
+      { name, email, message },
+    ]);
+
+    if (error) {
+      console.error("Submission error:", error.message);
+      alert("Something went wrong. Please try again.");
+    } else {
+      alert("Form submitted successfully!");
+      form.reset();
+    }
+  };
 
   return (
     <div className="w-full -mt-16 mb-8">
@@ -23,12 +41,12 @@ const JoinUs = () => {
             continue graduate school? MS student looking for PhD? This is what
             you need to know about us!
           </p>
-          <p className="max-w-3xl text-xl text-center tracking-tight text-blue-michigan">
+          {/* <p  className="max-w-3xl text-xl text-center tracking-tight text-blue-michigan">
             Please email Professor Radaideh at radaideh@umich.edu with the subject line: &quot;Joining AIMS Lab as a [Your academic status] - [Your name]&quot;
-          </p>
+          </p > */}
         </div>
 
-        {/* <div className="px-4 md:px-6 max-w-7xl mx-auto">
+        <div className="px-4 md:px-6 max-w-7xl mx-auto">
           <div className="max-w-lg w-full mx-auto rounded-2xl p-6 md:p-10 shadow-2xl bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-black transition-all duration-500 ease-in-out transform hover:scale-105">
             <h3 className="font-bold text-2xl text-blue-michigan dark:text-neutral-200 mb-4 animate-pulse">
               Get in Touch
@@ -47,6 +65,7 @@ const JoinUs = () => {
                 </label>
                 <input
                   id="name"
+                  name="name"
                   placeholder="Your Name"
                   type="text"
                   className="border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out animate-slide-up bg-white dark:bg-gray-800 text-neutral-900 dark:text-neutral-200"
@@ -62,6 +81,7 @@ const JoinUs = () => {
                 </label>
                 <input
                   id="email"
+                  name="email"
                   placeholder="your.email@example.com"
                   type="email"
                   className="border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out animate-slide-up delay-100 bg-white dark:bg-gray-800 text-neutral-900 dark:text-neutral-200"
@@ -77,6 +97,7 @@ const JoinUs = () => {
                 </label>
                 <textarea
                   id="message"
+                  name="message"
                   placeholder="Your message here..."
                   rows={5}
                   className="border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out animate-slide-up delay-200 resize-y bg-white dark:bg-gray-800 text-neutral-900 dark:text-neutral-200"
@@ -98,10 +119,10 @@ const JoinUs = () => {
               </div>
             </form>
           </div>
-        </div> */}
+        </div>
       </div>
 
-      {/* <style jsx>{`
+      <style jsx>{`
         @keyframes slide-up {
           0% {
             opacity: 0;
@@ -149,7 +170,7 @@ const JoinUs = () => {
         .delay-500 {
           animation-delay: 0.5s;
         }
-      `}</style> */}
+      `}</style>
     </div>
   );
 };
