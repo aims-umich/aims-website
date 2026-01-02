@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@heroui/react"
 import { researchItems } from "@/data/research"
+import Projects from "@/components/research/Projects"
 
 const topicsData = [
   {
@@ -57,59 +58,7 @@ const recentPapers = researchItems
     url: item.doi
 }))
 
-const projects = [
-  {
-    title: "Generative diffusion models for full-field reconstruction in nuclear digital twins",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Collaborative drone-based autonomous inspection in nuclear-plant-like environments",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Real-time sensor data assimilation into digital twins using variati onal inference techniques",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Deep reinforcement learning for real-time control of nuclear reactors",
-    link: "https://arxiv.org/abs/2504.00156",
-    wip: false
-  },
-  {
-    title: "Classical control a pproaches for load-following system design in nuclear microreactors",
-    link: "https://doi.org/10.1016/j.pnucene.2025.105676",
-    wip: false
-  },
-  {
-    title: "Recurrent neural networks and autoencoders for anomaly detection in electronic power signals",
-    link: "https://doi.org/10.1016/j.dsp.2022.103704",
-    wip: false
-  },
-  {
-    title: "Fault prognosis in particle accelerators using ensemble learning techniques",
-    link: "https://doi.org/10.36001/ijphm.2023.v14i1.3419",
-    wip: false
-  },
-  {
-    title: "Full-field temperature reconstruction in microreactor systems via matching pursuits",
-    link: "https://doi.org/10.1016/j.apm.2024.04.011",
-    wip: false
-  },
-  {
-    title: "Reactivity control and criticality search using swarm intelligence and evolutionary algorithms",
-    link: "https://doi.org/10.1016/j.nucengdes.2022.111776",
-    wip: false
-  },
-  {
-    title: "Forward digital twins for monitoring nuclear reactor transients and accident progression",
-    link: "https://doi.org/10.1016/j.eswa.2020.113699",
-    wip: false
-  },
 
-]
 
 export default function ReactorsPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -282,31 +231,7 @@ export default function ReactorsPage() {
             </Link>
           </div>
 
-          <div className="mb-20 max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight text-blue-michigan sm:text-4xl mb-8 text-center">
-              Recent Funded and Ongoing <span className="text-yellow-maize">Projects</span>
-            </h2>
-
-            <ul className="space-y-4 text-lg">
-              {projects.map((project, index) => (
-                <li key={index}>
-                  <span className="text-yellow-maize mr-2 text-2xl leading-none">•</span>
-                  <span className="text-blue-michigan font-bold">{project.title}</span>
-                  <br />
-                  <span className="text-blue-michigan">
-                    (Further read: {" "}
-                      {!project.wip 
-                        ? <Link href={project.link} className="text-yellow-maize">
-                          {project.link}
-                        </Link>
-                        : <p className="inline">{project.link}</p>
-                      }
-                    )
-                    </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Projects group="controls" />
         </div>
       </div>
     </div>

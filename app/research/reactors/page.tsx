@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@heroui/react"
 import { researchItems } from "@/data/research"
+import Projects from "@/components/research/Projects"
 
 const topicsData = [
   {
@@ -57,64 +58,7 @@ const recentPapers = researchItems
     url: item.doi
 }))
 
-const projects = [
-  {
-    title: "Safety analysis and design optimization of small modular reactors, with a focus on NuScale and Holtec SMR-300 systems",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Acceleration of CFD-based reactor safety analysis using multifidelity surrogate models for improved computational efficiency",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Application of tensor-train decompositions and isogeometric analysis to enhance the efficiency of neutron transport simulations",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Combinatorial optimization strategies for nuclear reactor site selection and evaluation",
-    link: "https://doi.org/10.1016/j.ecmx.2025.100923",
-    wip: false
-  },
-  {
-    title: "Development of scalable ensemble - based optimization algorithms integrated with online surrogate models to accelerate nuclear reactor design under computationally expensive simulations",
-    link: "https://link.springer.com/article/10.1007/s00521-022-07878-y",
-    wip: false
-  },
-  {
-    title: "Model-agnostic explainability methods for trustworthy and licensable AI in nuclear applications",
-    link: "https://arxiv.org/abs/2504.03913",
-    wip: false
-  },
-  {
-    title: "Coupled multiphysics simulations and criticality search for optimal drum placement in eVinci™-like microreactors",
-    link: "https://doi.org/10.1080/00295639.2024.2409582",
-    wip: false
-  },
-  {
-    title: "Physics-informed reinforcement learning for optimizing nuclear reactor cores and assemblies at large scale",
-    link: "https://doi.org/10.1016/j.nucengdes.2020.110966",
-    wip: false
-  },
-  {
-    title: "Advanced simulation and depletion modeling for precise isotopic predictions in boiling water reactor fuel assemblies",
-    link: "https://doi.org/10.1016/j.pnucene.2019.01.010",
-    wip: false
-  },
-  {
-    title: "Criticality safety and accident scenario modeling for spent fuel in boiling water reactors",
-    link: "https://doi.org/10.1016/j.pnucene.2019.03.039",
-    wip: false
-  },
-  {
-    title: "Propagation of delayed neutron data uncertainties into macroscopic kinetics parameters for light water reactors",
-    link: "https://doi.org/10.1016/j.anucene.2018.11.043",
-    wip: false
-  },
 
-]
 
 export default function ReactorsPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -287,31 +231,7 @@ export default function ReactorsPage() {
             </Link>
           </div>
 
-          <div className="mb-20 max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight text-blue-michigan sm:text-4xl mb-8 text-center">
-              Recent Funded and Ongoing <span className="text-yellow-maize">Projects</span>
-            </h2>
-
-            <ul className="space-y-4 text-lg">
-              {projects.map((project, index) => (
-                <li key={index}>
-                  <span className="text-yellow-maize mr-2 text-2xl leading-none">•</span>
-                  <span className="text-blue-michigan font-bold">{project.title}</span>
-                  <br />
-                  <span className="text-blue-michigan">
-                    (Further read: {" "}
-                      {!project.wip 
-                        ? <Link href={project.link} className="text-yellow-maize">
-                          {project.link}
-                        </Link>
-                        : <p className="inline">{project.link}</p>
-                      }
-                    )
-                    </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Projects group="reactors" />
         </div>
       </div>
     </div>

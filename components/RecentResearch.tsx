@@ -7,30 +7,50 @@ import { motion, useInView } from "framer-motion"
 import { FileText, Users, BookOpen } from "lucide-react"
 import { Button } from "@heroui/react"
 
-const paper = {
-  title:
-    "Sensitivity analysis and uncertainty propagation of the time to onset of natural circulation in air ingress accidents",
-  authors: [
-    "Meredith Eaheart",
-    "Jacob Cooper",
-    "Molly Ross",
-    "Nate See",
-    "Majdi I. Radaideh",
-  ],
-  journal: "Nuclear Engineering and Design",
-  year: 2025,
-  doi: "https://doi.org/10.1016/j.nucengdes.2025.114510",
-  abstract:
-    "This study investigates the time to onset of natural circulation (ONC) during a depressurized loss of forced cooling (DLOFC) event in a high-temperature gas reactor (HTGR). Using a fully automated Ansys Fluent simulation framework with PyFluent scripting, 500 CFD cases were generated with perturbed thermal and material properties. Surrogate models (random forests and neural networks) were trained to predict ONC time and post-ONC temperature, enabling global sensitivity analysis (SA) via Morris screening, Sobol indices, Fourier Amplitude Sensitivity Test, and regional sensitivity analysis. Monte Carlo-based uncertainty quantification was performed using the trained surrogates. Results showed that the heated section temperature was the dominant factor influencing ONC timing, with negligible contributions from heat transfer coefficient (HTC) and other thermophysical properties. In contrast, post-ONC temperature was influenced by both initial temperature and HTC. Sensitivity analysis revealed signs of nonlinear behavior and potential interactions between these parameters. The neural network achieved a test R^2 of 0.986 and MAE of 64 s for ONC timing, and an R^2 of 0.993 and MAE of 10 K for post-ONC temperature. While the random forest performed slightly worse, it still achieved a test R^2 of 0.985 and MAE of 64 s for ONC timing, and an R^2 of 0.964 with MAE of 24 K for post-ONC temperature. Using these surrogate models, the uncertainty propagation results verified the influence of the primary input parameters identified by sensitivity analysis on ONC timing and post-ONC temperature.",
-  imageUrl: "/homepage/recentPaper.jpg",
-  pdfUrl:
-    "https://www.sciencedirect.com/science/article/pii/S0029549325006879?via%3Dihub",
-  category: "reactors",
-};
+import { getRecentResearch, upsertResearchItem } from "@/lib/supabase/actions/research"
+import { useState, useEffect } from "react"
+import AdminWrapper from "./admin/AdminWrapper"
+import AdminModal from "./admin/AdminModal"
+import ResearchForm from "./admin/forms/ResearchForm"
 
 export default function RecentResearch() {
+  const [paper, setPaper] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [formData, setFormData] = useState<any>(null)
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.2 })
+
+  useEffect(() => {
+    fetchRecentPaper()
+  }, [])
+
+  const fetchRecentPaper = async () => {
+    const data = await getRecentResearch(1)
+    if (data.length > 0) {
+      setPaper(data[0])
+    }
+  }
+
+  const handleEdit = () => {
+    setFormData(paper)
+    setIsModalOpen(true)
+  }
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      await upsertResearchItem(formData)
+      await fetchRecentPaper()
+      setIsModalOpen(false)
+    } catch (error) {
+      alert("Error saving research")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (!paper) return null
 
   return (
     <section ref={ref} className="w-full py-24 relative overflow-hidden">
@@ -41,9 +61,11 @@ export default function RecentResearch() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold tracking-tight text-blue-michigan sm:text-4xl md:text-5xl mb-4">
-            Recent <span className="text-yellow-maize">Research</span>
-          </h2>
+          <AdminWrapper onEdit={handleEdit} label="Edit" position="header">
+            <h2 className="text-3xl font-bold tracking-tight text-blue-michigan sm:text-4xl md:text-5xl mb-4">
+              Recent <span className="text-yellow-maize">Research</span>
+            </h2>
+          </AdminWrapper>
           <p className="text-lg text-center max-w-2xl text-blue-michigan/80">
             Explore our latest publication that showcases our cutting-edge research in nuclear engineering and
             computational science.
@@ -60,7 +82,7 @@ export default function RecentResearch() {
             <div className="flex flex-col">
               <div className="relative h-[600px] w-full">
                 <Image
-                  src={paper.imageUrl}
+                  src={paper.image_url || paper.imageUrl}
                   alt={paper.title}
                   fill
                   className="object-cover transition-transform duration-700 ease-in-out"
@@ -68,7 +90,7 @@ export default function RecentResearch() {
 
                 <div className="absolute top-4 left-4">
                   <span className="bg-yellow-maize text-blue-michigan text-sm font-bold px-3 py-1 rounded-full capitalize">
-                    {paper.category}
+                    {paper.group_name || paper.category}
                   </span>
                 </div>
 
@@ -104,7 +126,7 @@ export default function RecentResearch() {
 
                   <div className="flex flex-wrap gap-4">
                     <Link
-                      href={paper.pdfUrl}
+                      href={paper.pdf_url || paper.pdfUrl}
                       className="inline-flex items-center gap-2 bg-blue-michigan text-yellow-maize px-5 py-2.5 rounded-lg font-medium hover:bg-blue-michigan/90 transition-colors"
                     >
                       <FileText size={18} />
@@ -115,6 +137,16 @@ export default function RecentResearch() {
               </div>
             </div>
           </div>
+
+          <AdminModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            title="Edit Featured Research"
+            onSave={handleSave}
+            isSaving={isSaving}
+          >
+            <ResearchForm initialData={formData} onChange={setFormData} />
+          </AdminModal>
         </motion.div>
 
         <div className="flex justify-center mt-8">

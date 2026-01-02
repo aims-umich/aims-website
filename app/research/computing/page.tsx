@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@heroui/react"
 import { researchItems } from "@/data/research"
+import Projects from "@/components/research/Projects"
 
 const topicsData = [
   {
@@ -57,59 +58,7 @@ const recentPapers = researchItems
     url: item.doi
 }))
 
-const projects = [
-  {
-    title: "Development of real-time visualization dashboards for analyzing public opinion on clean energy technologies via social media",
-    link: "Work in progress",
-    wip: true
-  },
-  {
-    title: "Leveraging large language models to analyze public sentiment on nuclear power using social media and targeted surveys",
-    link: "https://doi.org/10.1016/j.rser.2024.114570",
-    wip: false
-  },
-  {
-    title: "Creating domain - specific text-to-image generative models for accurate scientific visualizations of nuclear power systems",
-    link: "https://www.nature.com/articles/s41598-024-79705-4",
-    wip: false
-  },
-  {
-    title: "Evaluating data requirements for machine learning and generative AI in engineering applications",
-    link: "https://doi.org/10.1016/j.egyai.2025.100501",
-    wip: false
-  },
-  {
-    title: "Development of pyMAISE: An automated machinel earning framework with nuclear power benchmarks",
-    link: "https://doi.org/10.1016/j.pnucene.2024.105568",
-    wip: false
-  },
-  {
-    title: "Enhancing data availability and model accuracy in sustainable aviation fuel research using Bayesian methods and diffusion models",
-    link: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5211901",
-    wip: false
-  },
-  {
-    title: "Surrogate modeling for optimization, sensitivity analysis, and uncertainty quantification in complex simulations",
-    link: "https://doi.org/10.1016/j.ress.2019.106731",
-    wip: false
-  },
-  {
-    title: "Calibrating the liquid mercury spallation target model in particle accelerators using evolutionary neural networks and Bayesian uncertainty quantification",
-    link: "https://doi.org/10.1016/j.rinp.2022.105414",
-    wip: false
-  },
-  {
-    title: "Bayesian model averaging for handling model-form uncertainty and propagating uncertainty in nuclear simulation codes",
-    link: "https://doi.org/10.1016/j.ress.2019.04.020",
-    wip: false
-  },
-  {
-    title: "Design optimization under uncertainty for advanced energy and spallation neutron systems",
-    link: "https://doi.org/10.1016/j.ijhydene.2019.11.046",
-    wip: false
-  },
 
-]
 
 export default function ReactorsPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -282,31 +231,7 @@ export default function ReactorsPage() {
             </Link>
           </div>
 
-          <div className="mb-20 max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight text-blue-michigan sm:text-4xl mb-8 text-center">
-              Recent Funded and Ongoing <span className="text-yellow-maize">Projects</span>
-            </h2>
-
-            <ul className="space-y-4 text-lg">
-              {projects.map((project, index) => (
-                <li key={index}>
-                  <span className="text-yellow-maize mr-2 text-2xl leading-none">•</span>
-                  <span className="text-blue-michigan font-bold">{project.title}</span>
-                  <br />
-                  <span className="text-blue-michigan">
-                    (Further read: {" "}
-                      {!project.wip 
-                        ? <Link href={project.link} className="text-yellow-maize">
-                          {project.link}
-                        </Link>
-                        : <p className="inline">{project.link}</p>
-                      }
-                    )
-                    </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Projects group="computing" />
         </div>
       </div>
     </div>
