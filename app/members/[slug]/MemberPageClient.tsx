@@ -34,7 +34,6 @@ export default function MemberPageClient({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState<any>(null);
-  const admins = ["jeremoon", "radaideh"];
 
   useEffect(() => {
     document.body.style.overflow = "auto";
