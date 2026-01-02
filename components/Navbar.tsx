@@ -4,16 +4,22 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, X, ChevronDown, ShieldCheck } from "lucide-react"
 import Image from "next/image"
+import { getAdminStatus } from "@/lib/supabase/actions"
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isResearchDropdownOpen, setIsResearchDropdownOpen] = useState(false)
   const [isMobileResearchExpanded, setIsMobileResearchExpanded] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    getAdminStatus().then(setIsAdmin)
+  }, [pathname])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,11 +59,20 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-          <div className="relative h-16 md:h-14 w-48">
-            <Image src="/aims.png" width="120" height="120" alt="aims logo" />
-          </div>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center">
+            <div className="relative h-16 md:h-14 w-48">
+              <Image src="/aims.png" width="120" height="120" alt="aims logo" />
+            </div>
+          </Link>
+
+          {isAdmin && (
+            <div className="flex items-center gap-1 bg-blue-michigan/10 text-blue-michigan px-3 py-1 rounded-full border border-blue-michigan/20">
+              <ShieldCheck className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">Admin</span>
+            </div>
+          )}
+        </div>
 
         <nav className="hidden md:flex items-center space-x-1">
           <NavLink href="/" active={pathname === "/"}>
