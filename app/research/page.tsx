@@ -72,7 +72,6 @@ export default function ResearchDirectory() {
       group_name: "reactors",
       year: new Date().getFullYear(),
       timestamp: Math.floor(Date.now() / 1000),
-      is_recent: false,
       status: "Completed",
     });
     setIsModalOpen(true);

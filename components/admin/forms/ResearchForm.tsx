@@ -15,11 +15,13 @@ import { uploadImage } from "@/lib/supabase/actions/upload";
 interface ResearchFormProps {
   initialData?: any;
   onChange: (data: any) => void;
+  hideRecentCheckbox?: boolean;
 }
 
 export default function ResearchForm({
   initialData = {},
   onChange,
+  hideRecentCheckbox = false,
 }: ResearchFormProps) {
   const [formData, setFormData] = useState({
     id: initialData.id || "",
@@ -27,7 +29,6 @@ export default function ResearchForm({
     title: initialData.title || "",
     group_name: initialData.group_name || "reactors",
     image_url: initialData.image_url || "",
-    is_recent: initialData.is_recent ?? false,
     authors: initialData.authors?.join(", ") || "",
     journal: initialData.journal || "",
     year: initialData.year || new Date().getFullYear(),
@@ -245,14 +246,6 @@ export default function ResearchForm({
               Computing
             </SelectItem>
           </Select>
-        </div>
-        <div className="flex items-center pl-1 pt-9">
-          <Checkbox
-            isSelected={formData.is_recent}
-            onValueChange={(v) => handleChange("is_recent", v)}
-          >
-            Show on Homepage (Recent)
-          </Checkbox>
         </div>
       </div>
 

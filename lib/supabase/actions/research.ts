@@ -41,7 +41,6 @@ export async function getRecentResearch(limit: number = 5) {
   const { data, error } = await supabase
     .from('research')
     .select('*')
-    .eq('is_recent', true)
     .order('timestamp', { ascending: false })
     .limit(limit)
 
