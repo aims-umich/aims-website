@@ -109,7 +109,7 @@ export default function MemberPageClient({
         <AdminWrapper
           onEdit={handleEdit}
           label="Edit Member Profile"
-          className="absolute top-4 right-4 z-50"
+          className="absolute top-32 right-4 z-50"
         >
           <div className="hidden group-hover:block" />
         </AdminWrapper>
