@@ -88,7 +88,7 @@ const Gallery = () => {
         </div>
 
         <div className="px-4 md:px-6 max-w-7xl mx-auto">
-          <ParallaxScroll images={galleryImages} onEdit={handleEdit} />
+          <ParallaxScroll images={galleryImages} />
         </div>
 
         <AdminModal
