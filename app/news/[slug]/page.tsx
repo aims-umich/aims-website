@@ -8,32 +8,68 @@ import { motion } from "framer-motion"
 import { Calendar, User, Tag, ArrowLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { newsItems } from "@/data/news"
 import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa6"
+import { getNewsItemBySlug } from "@/lib/supabase/actions/news"
 
 export default function NewsArticlePage() {
   const params = useParams()
   const router = useRouter()
-  const [article, setArticle] = useState<(typeof newsItems)[0] | null>(null)
-  const [relatedArticles, setRelatedArticles] = useState<typeof newsItems>([])
+  const [article, setArticle] = useState<any | null>(null)
+  const [relatedArticles, setRelatedArticles] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const slug = params.slug as string
-    const foundArticle = newsItems.find((item) => item.slug === slug)
+    async function fetchArticle() {
+      const slug = params.slug as string
 
-    if (foundArticle) {
-      setArticle(foundArticle)
+      let foundArticle = newsItems.find((item) => item.slug === slug)
+      
+      let finalArticle: any = null
+      
+      if (foundArticle) {
+        finalArticle = {
+          ...foundArticle,
+          imageUrl: foundArticle.imageUrl
+        }
+      } else {
+        const supabaseItem = await getNewsItemBySlug(slug)
+        if (supabaseItem) {
+          finalArticle = {
+            id: supabaseItem.id,
+            title: supabaseItem.title,
+            excerpt: supabaseItem.excerpt,
+            content: supabaseItem.content,
+            date: supabaseItem.date,
+            timestamp: supabaseItem.timestamp,
+            imageUrl: supabaseItem.image_url,
+            link: supabaseItem.link,
+            author: supabaseItem.author,
+            category: supabaseItem.category,
+            slug: supabaseItem.slug,
+            images: supabaseItem.images || []
+          }
+        }
+      }
 
-      const related = newsItems
-        .filter((item) => item.category === foundArticle.category && item.id !== foundArticle.id)
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 3)
-
-      setRelatedArticles(related)
-    } else {
-      router.push("/news")
+      if (finalArticle) {
+        setArticle(finalArticle)
+        
+        // Find related
+        const related = newsItems
+          .filter((item) => item.category === finalArticle.category && (item.id !== finalArticle.id))
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .slice(0, 3)
+        
+        setRelatedArticles(related)
+      } else {
+        router.push("/news")
+      }
+      setLoading(false)
     }
+    
+    fetchArticle()
   }, [params.slug, router])
 
-  if (!article) {
+  if (loading || !article) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-michigan"></div>
@@ -92,7 +128,7 @@ export default function NewsArticlePage() {
               <Image src={article.imageUrl} alt={article.title} fill className="object-cover" />
             </div>
 
-            {article.images && article.images.map((url, index) => (
+            {article.images && article.images.map((url: string, index: number) => (
                 <div key={index} className="relative h-96 md:h-[500px] rounded-xl overflow-hidden mb-12 shadow-lg">
                   <Image
                     src={url}
@@ -105,7 +141,7 @@ export default function NewsArticlePage() {
             }
 
             <div className="prose prose-lg max-w-none">
-              {article.content.split("\n\n").map((paragraph, index) => (
+              {article.content.split("\n\n").map((paragraph: string, index: number) => (
                 <p key={index} className="mb-6 text-gray-700 leading-relaxed">
                   {paragraph}
                 </p>
@@ -199,4 +235,3 @@ export default function NewsArticlePage() {
     </div>
   )
 }
-

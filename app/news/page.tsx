@@ -1,47 +1,132 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { Search, Calendar, ArrowRight } from "lucide-react"
-import { newsItems } from "@/data/news"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Search, Calendar, ArrowRight, Plus } from "lucide-react";
+import {
+  getNews,
+  upsertNewsItem,
+  deleteNewsItem,
+} from "@/lib/supabase/actions/news";
+import AdminWrapper from "@/components/admin/AdminWrapper";
+import AdminModal from "@/components/admin/AdminModal";
+import NewsForm from "@/components/admin/forms/NewsForm";
 
-type Category = "all" | "reactors" | "controls" | "computing" | "general"
+type Category = "all" | "reactors" | "controls" | "computing" | "general";
 
 export default function NewsPage() {
-  const [activeCategory, setActiveCategory] = useState<Category>("all")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 9
+  const [newsItems, setNewsItems] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState<Category>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
 
-  const filteredItems = newsItems
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  const fetchNews = async () => {
+    const data = await getNews();
+    setNewsItems(data);
+  };
+
+  const handleEdit = (item: any) => {
+    setEditingItem(item);
+    setFormData(item);
+    setIsModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setEditingItem(null);
+    setFormData({
+      date: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+      timestamp: Math.floor(Date.now() / 1000),
+      category: "general",
+      author: "AIMS Lab",
+      featured: false,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await upsertNewsItem(formData);
+      await fetchNews();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error saving news");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingItem?.id) return;
+    setIsDeleting(true);
+    try {
+      await deleteNewsItem(editingItem.id);
+      await fetchNews();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error deleting news item");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const filteredItems = (newsItems || [])
     .filter((item) => {
-      const matchesCategory = activeCategory === "all" || item.category === activeCategory
+      const matchesCategory =
+        activeCategory === "all" || item.category === activeCategory;
       const matchesSearch =
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.content.toLowerCase().includes(searchQuery.toLowerCase())
+        item.content.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesCategory && matchesSearch
+      return matchesCategory && matchesSearch;
     })
-    .sort((a, b) => b.timestamp - a.timestamp)
+    .sort((a, b) => b.timestamp - a.timestamp);
 
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
-  const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const currentItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   useEffect(() => {
-    setCurrentPage(1)
-  }, [activeCategory, searchQuery])
+    setCurrentPage(1);
+  }, [activeCategory, searchQuery]);
 
   return (
     <div className="min-h-screen bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center pt-32">
-        <h1 className="text-4xl md:text-5xl text-blue-michigan font-bold mb-4">
-          Latest <span className="text-yellow-maize">News</span>
-        </h1>
+        <div className="flex items-center justify-center gap-3">
+          <h1 className="text-4xl md:text-5xl text-blue-michigan font-bold mb-4">
+            Latest <span className="text-yellow-maize">News</span>
+          </h1>
+          <AdminWrapper
+            onEdit={handleAdd}
+            label="Add"
+            variant="add"
+            position="header"
+          >
+            <span />
+          </AdminWrapper>
+        </div>
       </div>
 
       <section className="py-12 bg-white">
@@ -54,16 +139,28 @@ export default function NewsPage() {
               >
                 All News
               </CategoryButton>
-              <CategoryButton active={activeCategory === "reactors"} onClick={() => setActiveCategory("reactors")}>
+              <CategoryButton
+                active={activeCategory === "reactors"}
+                onClick={() => setActiveCategory("reactors")}
+              >
                 Reactors
               </CategoryButton>
-              <CategoryButton active={activeCategory === "controls"} onClick={() => setActiveCategory("controls")}>
+              <CategoryButton
+                active={activeCategory === "controls"}
+                onClick={() => setActiveCategory("controls")}
+              >
                 Controls
               </CategoryButton>
-              <CategoryButton active={activeCategory === "computing"} onClick={() => setActiveCategory("computing")}>
+              <CategoryButton
+                active={activeCategory === "computing"}
+                onClick={() => setActiveCategory("computing")}
+              >
                 Computing
               </CategoryButton>
-              <CategoryButton active={activeCategory === "general"} onClick={() => setActiveCategory("general")}>
+              <CategoryButton
+                active={activeCategory === "general"}
+                onClick={() => setActiveCategory("general")}
+              >
                 General
               </CategoryButton>
             </div>
@@ -84,7 +181,8 @@ export default function NewsPage() {
 
           <div className="mb-8 text-gray-600">
             <p>
-              Showing {filteredItems.length} {filteredItems.length === 1 ? "article" : "articles"}
+              Showing {filteredItems.length}{" "}
+              {filteredItems.length === 1 ? "article" : "articles"}
               {activeCategory !== "all" && ` in ${activeCategory}`}
               {searchQuery && ` matching "${searchQuery}"`}
             </p>
@@ -98,15 +196,36 @@ export default function NewsPage() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentItems.map((item, index) => (
-                  <NewsCard key={item.id} item={item} index={index} />
+                  <AdminWrapper
+                    key={item.id}
+                    onEdit={() => handleEdit(item)}
+                    label="Edit Item"
+                    className="h-full"
+                  >
+                    <NewsCard item={item} index={index} />
+                  </AdminWrapper>
                 ))}
               </div>
+
+              <AdminModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title={editingItem ? "Edit News Item" : "Add News Item"}
+                onSave={handleSave}
+                isSaving={isSaving}
+                onDelete={editingItem?.id ? handleDelete : undefined}
+                isDeleting={isDeleting}
+              >
+                <NewsForm initialData={formData} onChange={setFormData} />
+              </AdminModal>
 
               {totalPages > 1 && (
                 <div className="flex justify-center mt-16">
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                       className={`px-4 py-2 rounded-lg ${
                         currentPage === 1
@@ -117,22 +236,26 @@ export default function NewsPage() {
                       Previous
                     </button>
 
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`w-10 h-10 rounded-lg ${
-                          currentPage === page
-                            ? "bg-blue-michigan text-yellow-maize"
-                            : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`w-10 h-10 rounded-lg ${
+                            currentPage === page
+                              ? "bg-blue-michigan text-yellow-maize"
+                              : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
 
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                       className={`px-4 py-2 rounded-lg ${
                         currentPage === totalPages
@@ -151,12 +274,17 @@ export default function NewsPage() {
               <div className="mb-6">
                 <Search size={64} className="mx-auto text-gray-300" />
               </div>
-              <h3 className="text-2xl font-bold text-blue-michigan mb-4">No news articles found</h3>
-              <p className="text-gray-600 mb-8">We couldn&apos;t find any news articles matching your current filters.</p>
+              <h3 className="text-2xl font-bold text-blue-michigan mb-4">
+                No news articles found
+              </h3>
+              <p className="text-gray-600 mb-8">
+                We couldn&apos;t find any news articles matching your current
+                filters.
+              </p>
               <button
                 onClick={() => {
-                  setActiveCategory("all")
-                  setSearchQuery("")
+                  setActiveCategory("all");
+                  setSearchQuery("");
                 }}
                 className="bg-blue-michigan text-yellow-maize px-6 py-3 rounded-lg font-medium hover:bg-blue-michigan/90 transition-colors"
               >
@@ -167,11 +295,11 @@ export default function NewsPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
 
-function NewsCard({ item, index }: { item: (typeof newsItems)[0]; index: number }) {
-  const [isHovered, setIsHovered] = useState(false)
+function NewsCard({ item, index }: { item: any; index: number }) {
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
@@ -187,7 +315,7 @@ function NewsCard({ item, index }: { item: (typeof newsItems)[0]; index: number 
         >
           <div className="relative h-56 overflow-hidden">
             <Image
-              src={item.imageUrl}
+              src={item.image_url || item.imageUrl}
               alt={item.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -210,11 +338,16 @@ function NewsCard({ item, index }: { item: (typeof newsItems)[0]; index: number 
               {item.title}
             </h3>
 
-            <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">{item.excerpt}</p>
+            <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
+              {item.excerpt}
+            </p>
 
             <div className="flex items-center text-blue-michigan font-medium mt-auto">
               <span>Read more</span>
-              <motion.div animate={{ x: isHovered ? 5 : 0 }} transition={{ duration: 0.3 }}>
+              <motion.div
+                animate={{ x: isHovered ? 5 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
                 <ArrowRight className="ml-2 h-4 w-4" />
               </motion.div>
             </div>
@@ -222,7 +355,7 @@ function NewsCard({ item, index }: { item: (typeof newsItems)[0]; index: number 
         </div>
       </Link>
     </motion.div>
-  )
+  );
 }
 
 function CategoryButton({
@@ -231,21 +364,22 @@ function CategoryButton({
   onClick,
   icon,
 }: {
-  children: React.ReactNode
-  active: boolean
-  onClick: () => void
-  icon?: React.ReactNode
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+  icon?: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
       className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
-        active ? "bg-blue-michigan text-yellow-maize" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        active
+          ? "bg-blue-michigan text-yellow-maize"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
       }`}
     >
       {icon && icon}
       {children}
     </button>
-  )
+  );
 }
-
