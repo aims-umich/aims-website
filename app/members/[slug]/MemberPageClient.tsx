@@ -207,7 +207,7 @@ export default function MemberPageClient({
                 )}
               </div>
 
-              {member.slug === "jeremoon" || member.slug === "radaideh" && (
+              {(member.slug === "jeremoon" || member.slug === "radaideh") && (
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <AdminAccessButton />
                 </div>
