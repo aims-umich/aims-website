@@ -34,6 +34,7 @@ export default function MemberPageClient({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState<any>(null);
+  const admins = ["jeremoon", "radaideh"];
 
   useEffect(() => {
     document.body.style.overflow = "auto";
@@ -207,7 +208,7 @@ export default function MemberPageClient({
                 )}
               </div>
 
-              {member.slug === "radaideh" && (
+              {member.slug === "jeremoon" || member.slug === "radaideh" && (
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <AdminAccessButton />
                 </div>
