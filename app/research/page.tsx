@@ -1,47 +1,146 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import Image from "next/image"
-import Link from "next/link"
-import { useState, useId, useRef, useEffect } from "react"
-import { motion, AnimatePresence, Variants } from "framer-motion"
-import { FileText, BookOpen, Calendar, Users, ChevronDown, X, ExternalLink, Download, Tag, Clock } from "lucide-react"
-import { Button } from "@heroui/react"
-import { researchItems, ResearchItem } from "@/data/research"
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useId, useRef, useEffect } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
+import {
+  FileText,
+  BookOpen,
+  Calendar,
+  Users,
+  ChevronDown,
+  X,
+  ExternalLink,
+  Download,
+  Tag,
+  Clock,
+  Plus,
+} from "lucide-react";
+import { Button } from "@heroui/react";
+import {
+  getResearch,
+  upsertResearchItem,
+  deleteResearchItem,
+} from "@/lib/supabase/actions/research";
 import { FaGoogleScholar, FaResearchgate, FaSchool } from "react-icons/fa6";
+import AdminWrapper from "@/components/admin/AdminWrapper";
+import AdminModal from "@/components/admin/AdminModal";
+import ResearchForm from "@/components/admin/forms/ResearchForm";
 
-type ResearchCategory = "all" | "publications" | "projects" | "reactors" | "controls" | "computing"
+type ResearchCategory =
+  | "all"
+  | "publications"
+  | "projects"
+  | "reactors"
+  | "controls"
+  | "computing";
 
 export default function ResearchDirectory() {
-  const [activeCategory, setActiveCategory] = useState<ResearchCategory>("all")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-  const [isGridView, setIsGridView] = useState(true)
+  const [researchItems, setResearchItems] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState<ResearchCategory>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isGridView, setIsGridView] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
 
-  const filteredItems = researchItems.filter((item) => {
-    const matchesCategory =
-      activeCategory === "all" ||
-      (activeCategory === "publications" && item.type === "publication") ||
-      (activeCategory === "projects" && item.type === "project") ||
-      (activeCategory === "reactors" && item.group === "reactors") ||
-      (activeCategory === "controls" && item.group === "controls") ||
-      (activeCategory === "computing" && item.group === "computing")
+  useEffect(() => {
+    fetchResearch();
+  }, []);
 
-    const matchesSearch =
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.type === "publication" &&
-        (item.authors?.some((author) => author.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          item.journal?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.keywords?.some((keyword) => keyword.toLowerCase().includes(searchQuery.toLowerCase())))) ||
-      (item.type === "project" &&
-        (item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.collaborators?.some((collaborator) => collaborator.toLowerCase().includes(searchQuery.toLowerCase()))))
+  const fetchResearch = async () => {
+    const data = await getResearch();
+    setResearchItems(data);
+  };
 
-    return matchesCategory && (searchQuery ? matchesSearch : true)
-  }).sort((a, b) => {
-    return b.timestamp - a.timestamp
-  });
+  const handleEdit = (item: any) => {
+    setEditingItem(item);
+    setFormData(item);
+    setIsModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setEditingItem(null);
+    setFormData({
+      type: "publication",
+      group_name: "reactors",
+      year: new Date().getFullYear(),
+      timestamp: Math.floor(Date.now() / 1000),
+      is_recent: false,
+      status: "Completed",
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await upsertResearchItem(formData);
+      await fetchResearch();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error saving research");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingItem?.id) return;
+    setIsDeleting(true);
+    try {
+      await deleteResearchItem(editingItem.id);
+      await fetchResearch();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error deleting research item");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const filteredItems = (researchItems || [])
+    .filter((item) => {
+      const matchesCategory =
+        activeCategory === "all" ||
+        (activeCategory === "publications" && item.type === "publication") ||
+        (activeCategory === "projects" && item.type === "project") ||
+        (activeCategory === "reactors" &&
+          (item.group === "reactors" || item.group_name === "reactors")) ||
+        (activeCategory === "controls" &&
+          (item.group === "controls" || item.group_name === "controls")) ||
+        (activeCategory === "computing" &&
+          (item.group === "computing" || item.group_name === "computing"));
+
+      const matchesSearch =
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.type === "publication" &&
+          (item.authors?.some((author: string) =>
+            author.toLowerCase().includes(searchQuery.toLowerCase())
+          ) ||
+            item.journal?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.keywords?.some((keyword: string) =>
+              keyword.toLowerCase().includes(searchQuery.toLowerCase())
+            ))) ||
+        (item.type === "project" &&
+          (item.description
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+            item.collaborators?.some((collaborator: string) =>
+              collaborator.toLowerCase().includes(searchQuery.toLowerCase())
+            )));
+
+      return matchesCategory && (searchQuery ? matchesSearch : true);
+    })
+    .sort((a, b) => {
+      return b.timestamp - a.timestamp;
+    });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -51,7 +150,7 @@ export default function ResearchDirectory() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -60,21 +159,33 @@ export default function ResearchDirectory() {
       opacity: 1,
       transition: { type: "spring", stiffness: 100 },
     },
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white text-blue-michigan py-32">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Research <span className="text-yellow-maize">Directory</span>
-          </h1>
+          <div className="flex items-center justify-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Research <span className="text-yellow-maize">Directory</span>
+            </h1>
+            <AdminWrapper
+              onEdit={handleAdd}
+              label="Add"
+              variant="add"
+              position="header"
+            >
+              <span />
+            </AdminWrapper>
+          </div>
           <p className="max-w-2xl mx-auto text-blue-michigan text-lg">
-            Explore our lab&apos;s publications and current research projects across our three main focus areas: Reactors, Controls,
-            and Computing. Our interdisciplinary approach combines nuclear engineering with advanced computational
-            methods to solve complex challenges.
+            Explore our lab&apos;s publications and current research projects
+            across our three main focus areas: Reactors, Controls, and
+            Computing. Our interdisciplinary approach combines nuclear
+            engineering with advanced computational methods to solve complex
+            challenges.
           </p>
-          <motion.div 
+          <motion.div
             className="max-w-3xl mx-auto mt-8 mb-12 bg-gradient-to-r from-blue-michigan/5 via-blue-michigan/10 to-blue-michigan/5 rounded-xl p-6 border border-blue-michigan/20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,35 +197,39 @@ export default function ResearchDirectory() {
                   <Clock />
                 </div>
                 <div>
-                  <p className="text-blue-michigan font-medium">Directory last updated</p>
+                  <p className="text-blue-michigan font-medium">
+                    Directory last updated
+                  </p>
                   <p className="text-blue-michigan/70 text-sm">08-11-2025</p>
                 </div>
               </div>
-              
+
               <div>
-                <p className="text-blue-michigan font-medium mb-2 text-center md:text-right">View our complete research archive:</p>
+                <p className="text-blue-michigan font-medium mb-2 text-center md:text-right">
+                  View our complete research archive:
+                </p>
                 <div className="flex flex-wrap gap-2 justify-center md:justify-end">
-                  <a 
-                    href="https://scholar.google.com/citations?user=G2zrIPUAAAAJ&hl=en" 
-                    target="_blank" 
+                  <a
+                    href="https://scholar.google.com/citations?user=G2zrIPUAAAAJ&hl=en"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 bg-white border border-blue-michigan/30 hover:border-blue-michigan text-blue-michigan px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                   >
                     <FaGoogleScholar />
                     Google Scholar
                   </a>
-                  <a 
-                    href="https://www.researchgate.net/profile/Majdi-Radaideh" 
-                    target="_blank" 
+                  <a
+                    href="https://www.researchgate.net/profile/Majdi-Radaideh"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 bg-white border border-blue-michigan/30 hover:border-blue-michigan text-blue-michigan px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                   >
                     <FaResearchgate />
                     ResearchGate
                   </a>
-                  <a 
-                    href="https://experts.umich.edu/10012-majdi-radaideh" 
-                    target="_blank" 
+                  <a
+                    href="https://experts.umich.edu/10012-majdi-radaideh"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 bg-white border border-blue-michigan/30 hover:border-blue-michigan text-blue-michigan px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                   >
@@ -129,7 +244,10 @@ export default function ResearchDirectory() {
 
         <div className="mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-wrap gap-2 justify-center">
-            <CategoryButton active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>
+            <CategoryButton
+              active={activeCategory === "all"}
+              onClick={() => setActiveCategory("all")}
+            >
               All Research
             </CategoryButton>
             {/* NOTE: RE-ADD THESE BUTTONS IF WE INTRODUCE PROJECTS TO DIRECTORY TOO */}
@@ -142,13 +260,22 @@ export default function ResearchDirectory() {
             <CategoryButton active={activeCategory === "projects"} onClick={() => setActiveCategory("projects")}>
               Current Projects
             </CategoryButton> */}
-            <CategoryButton active={activeCategory === "reactors"} onClick={() => setActiveCategory("reactors")}>
+            <CategoryButton
+              active={activeCategory === "reactors"}
+              onClick={() => setActiveCategory("reactors")}
+            >
               Reactors
             </CategoryButton>
-            <CategoryButton active={activeCategory === "controls"} onClick={() => setActiveCategory("controls")}>
+            <CategoryButton
+              active={activeCategory === "controls"}
+              onClick={() => setActiveCategory("controls")}
+            >
               Controls
             </CategoryButton>
-            <CategoryButton active={activeCategory === "computing"} onClick={() => setActiveCategory("computing")}>
+            <CategoryButton
+              active={activeCategory === "computing"}
+              onClick={() => setActiveCategory("computing")}
+            >
               Computing
             </CategoryButton>
           </div>
@@ -166,7 +293,11 @@ export default function ResearchDirectory() {
             <div className="flex gap-2">
               <button
                 onClick={() => setIsGridView(true)}
-                className={`p-2 rounded-lg ${isGridView ? "bg-blue-michigan text-white" : "bg-gray-100 text-blue-michigan hover:bg-gray-200"}`}
+                className={`p-2 rounded-lg ${
+                  isGridView
+                    ? "bg-blue-michigan text-white"
+                    : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+                }`}
                 aria-label="Grid view"
               >
                 <svg
@@ -188,7 +319,11 @@ export default function ResearchDirectory() {
               </button>
               <button
                 onClick={() => setIsGridView(false)}
-                className={`p-2 rounded-lg ${!isGridView ? "bg-blue-michigan text-white" : "bg-gray-100 text-blue-michigan hover:bg-gray-200"}`}
+                className={`p-2 rounded-lg ${
+                  !isGridView
+                    ? "bg-blue-michigan text-white"
+                    : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+                }`}
                 aria-label="List view"
               >
                 <svg
@@ -213,7 +348,8 @@ export default function ResearchDirectory() {
 
         <div className="mb-8 text-blue-michigan">
           <p>
-            Showing {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"}
+            Showing {filteredItems.length}{" "}
+            {filteredItems.length === 1 ? "item" : "items"}
           </p>
         </div>
 
@@ -225,31 +361,62 @@ export default function ResearchDirectory() {
             animate="visible"
           >
             {filteredItems.map((item) => (
-              <ResearchCard
+              <AdminWrapper
                 key={item.id}
-                item={item}
-                isHovered={hoveredItem === item.id}
-                onHover={() => setHoveredItem(item.id)}
-                onLeave={() => setHoveredItem(null)}
-                variants={itemVariants}
-              />
+                onEdit={() => handleEdit(item)}
+                label="Edit Item"
+                className="h-full"
+              >
+                <ResearchCard
+                  item={item}
+                  isHovered={hoveredItem === item.id}
+                  onHover={() => setHoveredItem(item.id)}
+                  onLeave={() => setHoveredItem(null)}
+                  variants={itemVariants}
+                />
+              </AdminWrapper>
             ))}
           </motion.div>
         ) : (
-          <motion.div className="flex flex-col gap-4" variants={containerVariants} initial="hidden" animate="visible">
+          <motion.div
+            className="flex flex-col gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {filteredItems.map((item) => (
-              <ResearchListItem key={item.id} item={item} variants={itemVariants} />
+              <AdminWrapper
+                key={item.id}
+                onEdit={() => handleEdit(item)}
+                label="Edit Item"
+              >
+                <ResearchListItem item={item} variants={itemVariants} />
+              </AdminWrapper>
             ))}
           </motion.div>
         )}
 
+        <AdminModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title={editingItem ? "Edit Research Item" : "Add Research Item"}
+          onSave={handleSave}
+          isSaving={isSaving}
+          onDelete={editingItem?.id ? handleDelete : undefined}
+          isDeleting={isDeleting}
+        >
+          <ResearchForm initialData={formData} onChange={setFormData} />
+        </AdminModal>
+
         {filteredItems.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-blue-michigan text-xl">No research items found matching your criteria.</p>
+            <p className="text-blue-michigan text-xl">
+              No research items found matching your criteria.
+            </p>
             <button
               onClick={() => {
-                setActiveCategory("all")
-                setSearchQuery("")
+                setActiveCategory("all");
+                setSearchQuery("");
               }}
               className="mt-4 px-4 py-2 bg-blue-michigan text-yellow-maize rounded-lg hover:bg-blue-michigan/90 transition"
             >
@@ -259,7 +426,7 @@ export default function ResearchDirectory() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function CategoryButton({
@@ -267,20 +434,22 @@ function CategoryButton({
   active,
   onClick,
 }: {
-  children: React.ReactNode
-  active: boolean
-  onClick: () => void
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
       className={`px-4 py-2 rounded-lg transition-all duration-300 ${
-        active ? "bg-blue-michigan text-yellow-maize" : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+        active
+          ? "bg-blue-michigan text-yellow-maize"
+          : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
       }`}
     >
       {children}
     </button>
-  )
+  );
 }
 
 // grid view card component
@@ -291,38 +460,38 @@ function ResearchCard({
   onLeave,
   variants,
 }: {
-  item: ResearchItem
-  isHovered: boolean
-  onHover: () => void
-  onLeave: () => void
-  variants: Variants
+  item: any;
+  isHovered: boolean;
+  onHover: () => void;
+  onLeave: () => void;
+  variants: Variants;
 }) {
-  const [active, setActive] = useState(false)
-  const id = useId()
-  const ref = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(false);
+  const id = useId();
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setActive(false)
+        setActive(false);
       }
     }
 
     if (active) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = "auto";
     }
 
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [active])
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [active]);
 
   const handleModalClose = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setActive(false)
+      setActive(false);
     }
-  }
+  };
 
   return (
     <>
@@ -337,7 +506,7 @@ function ResearchCard({
           <div className="relative h-48 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-blue-michigan/30 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <Image
-              src={item.imageUrl}
+              src={item.image_url || item.imageUrl}
               alt={item.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -356,7 +525,9 @@ function ResearchCard({
           </div>
 
           <div className="p-6 flex-1 flex flex-col">
-            <h3 className="text-xl font-bold text-blue-michigan mb-2 line-clamp-2">{item.title}</h3>
+            <h3 className="text-xl font-bold text-blue-michigan mb-2 line-clamp-2">
+              {item.title}
+            </h3>
 
             {item.type === "publication" && item.authors && (
               <>
@@ -366,14 +537,18 @@ function ResearchCard({
                 </p>
                 <div className="flex items-center gap-2 mb-2">
                   <BookOpen className="text-blue-michigan/70" size={14} />
-                  <p className="text-sm text-blue-michigan/70">{item.journal}</p>
+                  <p className="text-sm text-blue-michigan/70">
+                    {item.journal}
+                  </p>
                 </div>
               </>
             )}
 
             {item.type === "project" && item.description && (
               <>
-                <p className="text-blue-michigan/70 mb-2 text-sm line-clamp-3">{item.description}</p>
+                <p className="text-blue-michigan/70 mb-2 text-sm line-clamp-3">
+                  {item.description}
+                </p>
                 <div className="flex items-center gap-2 mb-2">
                   <Tag className="text-blue-michigan/70" size={14} />
                   <p className="text-sm text-blue-michigan/70">{item.status}</p>
@@ -386,54 +561,74 @@ function ResearchCard({
               <p className="text-sm text-blue-michigan/70">
                 {item.type === "publication" && item.year
                   ? item.year
-                  : item.startYear && `${item.startYear} - ${item.endYear || "Present"}`}
+                  : item.startYear &&
+                    `${item.startYear} - ${item.endYear || "Present"}`}
               </p>
             </div>
 
             <div
-              className={`overflow-hidden transition-all duration-300 mt-auto ${isHovered ? "max-h-40" : "max-h-0"}`}
+              className={`overflow-hidden transition-all duration-300 mt-auto ${
+                isHovered ? "max-h-40" : "max-h-0"
+              }`}
             >
-              {item.type === "publication" && item.keywords && item.keywords.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {item.keywords.slice(0, 3).map((keyword: string, idx: number) => (
-                    <span key={idx} className="text-xs bg-gray-100 text-blue-michigan px-2 py-1 rounded-full">
-                      {keyword}
-                    </span>
-                  ))}
-                  {item.keywords.length > 3 && (
-                    <span className="text-xs bg-gray-100 text-blue-michigan px-2 py-1 rounded-full">
-                      +{item.keywords.length - 3}
-                    </span>
-                  )}
-                </div>
-              )}
+              {item.type === "publication" &&
+                item.keywords &&
+                item.keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {item.keywords
+                      .slice(0, 3)
+                      .map((keyword: string, idx: number) => (
+                        <span
+                          key={idx}
+                          className="text-xs bg-gray-100 text-blue-michigan px-2 py-1 rounded-full"
+                        >
+                          {keyword}
+                        </span>
+                      ))}
+                    {item.keywords.length > 3 && (
+                      <span className="text-xs bg-gray-100 text-blue-michigan px-2 py-1 rounded-full">
+                        +{item.keywords.length - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
 
-              {item.type === "project" && item.collaborators && item.collaborators.length > 0 && (
-                <div className="flex items-start gap-2 mb-3">
-                  <Users className="text-blue-michigan/70 mt-1 shrink-0" size={14} />
-                  <p className="text-xs text-blue-michigan">
-                    {item.collaborators.slice(0, 2).join(", ")}
-                    {item.collaborators.length > 2 && ` +${item.collaborators.length - 2} more`}
-                  </p>
-                </div>
-              )}
+              {item.type === "project" &&
+                item.collaborators &&
+                item.collaborators.length > 0 && (
+                  <div className="flex items-start gap-2 mb-3">
+                    <Users
+                      className="text-blue-michigan/70 mt-1 shrink-0"
+                      size={14}
+                    />
+                    <p className="text-xs text-blue-michigan">
+                      {item.collaborators.slice(0, 2).join(", ")}
+                      {item.collaborators.length > 2 &&
+                        ` +${item.collaborators.length - 2} more`}
+                    </p>
+                  </div>
+                )}
             </div>
 
             <div className="flex justify-between items-center mt-4">
               <div className="flex gap-2">
-                {item.type === "publication" && item.pdfUrl && (
-                  <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-blue-michigan transition">
-                    <Download size={16} />
-                  </button>
-                )}
-                {item.type === "project" && item.websiteUrl && (
-                  <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-blue-michigan transition">
-                    <ExternalLink size={16} />
-                  </button>
-                )}
+                {item.type === "publication" &&
+                  (item.pdf_url || item.pdfUrl) && (
+                    <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-blue-michigan transition">
+                      <Download size={16} />
+                    </button>
+                  )}
+                {item.type === "project" &&
+                  (item.website_url || item.websiteUrl) && (
+                    <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-blue-michigan transition">
+                      <ExternalLink size={16} />
+                    </button>
+                  )}
               </div>
               <ChevronDown
-                className={`text-blue-michigan/70 transition-transform duration-300 ${isHovered ? "rotate-180" : "rotate-0"}`}
+                className={`text-blue-michigan/70 transition-transform duration-300 ${
+                  isHovered ? "rotate-180" : "rotate-0"
+                }`}
                 size={18}
               />
             </div>
@@ -466,7 +661,7 @@ function ResearchCard({
 
               <div className="md:w-2/5 relative">
                 <Image
-                  src={item.imageUrl}
+                  src={item.image_url || item.imageUrl}
                   alt={item.title}
                   className="object-cover h-full w-full"
                   width={500}
@@ -486,53 +681,77 @@ function ResearchCard({
               </div>
 
               <div className="md:w-3/5 p-6 md:p-8 overflow-y-auto max-h-[70vh] md:max-h-[90vh]">
-                <h2 className="text-2xl font-bold text-blue-michigan mb-4">{item.title}</h2>
+                <h2 className="text-2xl font-bold text-blue-michigan mb-4">
+                  {item.title}
+                </h2>
 
                 {item.type === "publication" && (
                   <>
                     {item.authors && (
                       <div className="flex items-center gap-2 mb-4">
                         <Users className="text-blue-michigan/70" size={16} />
-                        <p className="text-blue-michigan/70">{item.authors.join(", ")}</p>
+                        <p className="text-blue-michigan/70">
+                          {item.authors.join(", ")}
+                        </p>
                       </div>
                     )}
 
                     <div className="flex flex-wrap gap-4 mb-6">
                       {item.journal && (
                         <div className="flex items-center gap-2">
-                          <BookOpen className="text-blue-michigan/70" size={16} />
-                          <p className="text-blue-michigan/70">{item.journal}</p>
+                          <BookOpen
+                            className="text-blue-michigan/70"
+                            size={16}
+                          />
+                          <p className="text-blue-michigan/70">
+                            {item.journal}
+                          </p>
                         </div>
                       )}
 
                       {item.year && (
                         <div className="flex items-center gap-2">
-                          <Calendar className="text-blue-michigan/70" size={16} />
+                          <Calendar
+                            className="text-blue-michigan/70"
+                            size={16}
+                          />
                           <p className="text-blue-michigan/70">{item.year}</p>
                         </div>
                       )}
 
                       {item.doi && (
                         <div className="flex items-center gap-2">
-                          <FileText className="text-blue-michigan/70" size={16} />
-                          <p className="text-blue-michigan/70">DOI: {item.doi}</p>
+                          <FileText
+                            className="text-blue-michigan/70"
+                            size={16}
+                          />
+                          <p className="text-blue-michigan/70">
+                            DOI: {item.doi}
+                          </p>
                         </div>
                       )}
                     </div>
 
                     {item.abstract && (
                       <div className="mb-6">
-                        <h3 className="text-xl font-medium text-blue-michigan mb-2">Abstract</h3>
+                        <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                          Abstract
+                        </h3>
                         <p className="text-blue-michigan">{item.abstract}</p>
                       </div>
                     )}
 
                     {item.keywords && item.keywords.length > 0 && (
                       <div className="mb-6">
-                        <h3 className="text-xl font-medium text-blue-michigan mb-2">Keywords</h3>
+                        <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                          Keywords
+                        </h3>
                         <div className="flex flex-wrap gap-2">
                           {item.keywords.map((keyword: string, idx: number) => (
-                            <span key={idx} className="text-sm bg-gray-100 text-blue-michigan px-3 py-1 rounded-full">
+                            <span
+                              key={idx}
+                              className="text-sm bg-gray-100 text-blue-michigan px-3 py-1 rounded-full"
+                            >
                               {keyword}
                             </span>
                           ))}
@@ -554,7 +773,10 @@ function ResearchCard({
 
                       {item.startYear && (
                         <div className="flex items-center gap-2">
-                          <Calendar className="text-blue-michigan/70" size={16} />
+                          <Calendar
+                            className="text-blue-michigan/70"
+                            size={16}
+                          />
                           <p className="text-blue-michigan/70">
                             {item.startYear} - {item.endYear || "Present"}
                           </p>
@@ -564,28 +786,40 @@ function ResearchCard({
 
                     {item.description && (
                       <div className="mb-6">
-                        <h3 className="text-xl font-medium text-blue-michigan mb-2">Description</h3>
+                        <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                          Description
+                        </h3>
                         <p className="text-blue-michigan">{item.description}</p>
                       </div>
                     )}
 
                     {item.fundingSource && (
                       <div className="mb-6">
-                        <h3 className="text-xl font-medium text-blue-michigan mb-2">Funding</h3>
-                        <p className="text-blue-michigan">{item.fundingSource}</p>
+                        <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                          Funding
+                        </h3>
+                        <p className="text-blue-michigan">
+                          {item.fundingSource}
+                        </p>
                       </div>
                     )}
 
                     {item.collaborators && item.collaborators.length > 0 && (
                       <div className="mb-6">
-                        <h3 className="text-xl font-medium text-blue-michigan mb-2">Collaborators</h3>
+                        <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                          Collaborators
+                        </h3>
                         <ul className="space-y-1">
-                          {item.collaborators.map((collaborator: string, idx: number) => (
-                            <li key={idx} className="flex items-start">
-                              <span className="inline-block w-2 h-2 rounded-full bg-blue-michigan/70 mt-2 mr-2"></span>
-                              <span className="text-blue-michigan">{collaborator}</span>
-                            </li>
-                          ))}
+                          {item.collaborators.map(
+                            (collaborator: string, idx: number) => (
+                              <li key={idx} className="flex items-start">
+                                <span className="inline-block w-2 h-2 rounded-full bg-blue-michigan/70 mt-2 mr-2"></span>
+                                <span className="text-blue-michigan">
+                                  {collaborator}
+                                </span>
+                              </li>
+                            )
+                          )}
                         </ul>
                       </div>
                     )}
@@ -593,38 +827,43 @@ function ResearchCard({
                 )}
 
                 <div className="flex space-x-3 mt-6">
-                  {item.type === "publication" && item.pdfUrl && (
-                    <Link href={item.pdfUrl}>
-                      <Button
-                        className="px-6 py-2 bg-blue-michigan text-yellow-maize rounded-lg hover:bg-blue-michigan/90 transition"
-                        size="sm"
-                      >
-                        <Download className="h-4 w-4" />
-                        View Paper
-                      </Button>
-                    </Link>
-                  )}
+                  {item.type === "publication" &&
+                    (item.pdf_url || item.pdfUrl) && (
+                      <Link href={item.pdf_url || item.pdfUrl}>
+                        <Button
+                          className="px-6 py-2 bg-blue-michigan text-yellow-maize rounded-lg hover:bg-blue-michigan/90 transition"
+                          size="sm"
+                        >
+                          <Download className="h-4 w-4" />
+                          View Paper
+                        </Button>
+                      </Link>
+                    )}
 
-                  {item.type === "project" && item.websiteUrl && (
-                    <Link href={item.websiteUrl}>
-                      <Button
-                        className="px-6 py-2 bg-blue-michigan text-yellow-maize rounded-lg hover:bg-blue-michigan/90 transition"
-                        size="sm"
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Visit Project Website
-                      </Button>
-                    </Link>
-                  )}
+                  {item.type === "project" &&
+                    (item.website_url || item.websiteUrl) && (
+                      <Link href={item.website_url || item.websiteUrl}>
+                        <Button
+                          className="px-6 py-2 bg-blue-michigan text-yellow-maize rounded-lg hover:bg-blue-michigan/90 transition"
+                          size="sm"
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          Visit Project Website
+                        </Button>
+                      </Link>
+                    )}
 
-                  <Link href={`/research/${item.group}`}>
+                  <Link href={`/research/${item.group_name || item.group}`}>
                     <Button
                       className="px-6 py-2 border border-blue-michigan text-blue-michigan bg-white rounded-lg hover:bg-gray-50 transition"
                       size="sm"
                     >
-                      View {item.group.charAt(0).toUpperCase() + item.group.slice(1)} Group
+                      View{" "}
+                      {(item.group_name || item.group).charAt(0).toUpperCase() +
+                        (item.group_name || item.group).slice(1)}{" "}
+                      Group
                     </Button>
-                    </Link>
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -632,7 +871,7 @@ function ResearchCard({
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
 // list view item component
@@ -640,10 +879,10 @@ function ResearchListItem({
   item,
   variants,
 }: {
-  item: ResearchItem
-  variants: Variants
+  item: any;
+  variants: Variants;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <motion.div
@@ -653,7 +892,7 @@ function ResearchListItem({
       <div className="p-4 sm:p-6 flex flex-col sm:flex-row gap-6">
         <div className="relative w-full sm:w-32 h-32 shrink-0">
           <Image
-            src={item.imageUrl}
+            src={item.image_url || item.imageUrl}
             alt={item.title}
             width={128}
             height={128}
@@ -675,10 +914,14 @@ function ResearchListItem({
         <div className="flex-1">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-2">
             <div>
-              <h3 className="text-xl font-bold text-blue-michigan mb-1">{item.title}</h3>
+              <h3 className="text-xl font-bold text-blue-michigan mb-1">
+                {item.title}
+              </h3>
 
               {item.type === "publication" && item.authors && (
-                <p className="text-blue-michigan/70 mb-2">{item.authors.join(", ")}</p>
+                <p className="text-blue-michigan/70 mb-2">
+                  {item.authors.join(", ")}
+                </p>
               )}
 
               <div className="flex flex-wrap gap-4 mb-2">
@@ -687,14 +930,18 @@ function ResearchListItem({
                     {item.journal && (
                       <div className="flex items-center gap-2">
                         <BookOpen className="text-blue-michigan/70" size={14} />
-                        <p className="text-sm text-blue-michigan/70">{item.journal}</p>
+                        <p className="text-sm text-blue-michigan/70">
+                          {item.journal}
+                        </p>
                       </div>
                     )}
 
                     {item.year && (
                       <div className="flex items-center gap-2">
                         <Calendar className="text-blue-michigan/70" size={14} />
-                        <p className="text-sm text-blue-michigan/70">{item.year}</p>
+                        <p className="text-sm text-blue-michigan/70">
+                          {item.year}
+                        </p>
                       </div>
                     )}
                   </>
@@ -705,7 +952,9 @@ function ResearchListItem({
                     {item.status && (
                       <div className="flex items-center gap-2">
                         <Tag className="text-blue-michigan/70" size={14} />
-                        <p className="text-sm text-blue-michigan/70">{item.status}</p>
+                        <p className="text-sm text-blue-michigan/70">
+                          {item.status}
+                        </p>
                       </div>
                     )}
 
@@ -747,12 +996,13 @@ function ResearchListItem({
                 </Link>
               )}
 
-              <Link href={`/research/${item.group}`}>
+              <Link href={`/research/${item.group_name || item.group}`}>
                 <Button
                   className="px-3 py-1 text-sm border border-blue-michigan text-blue-michigan bg-white rounded-lg hover:bg-gray-50 transition"
                   size="sm"
                 >
-                  {item.group.charAt(0).toUpperCase() + item.group.slice(1)}
+                  {(item.group_name || item.group).charAt(0).toUpperCase() +
+                    (item.group_name || item.group).slice(1)}
                 </Button>
               </Link>
             </div>
@@ -766,7 +1016,9 @@ function ResearchListItem({
 
           {item.type === "project" && item.description && (
             <div className="mb-4">
-              <p className="text-blue-michigan line-clamp-2">{item.description}</p>
+              <p className="text-blue-michigan line-clamp-2">
+                {item.description}
+              </p>
             </div>
           )}
 
@@ -774,45 +1026,66 @@ function ResearchListItem({
             onClick={() => setIsExpanded(!isExpanded)}
             className="flex items-center gap-1 text-blue-michigan/70 hover:text-blue-michigan transition"
           >
-            <span className="text-sm">{isExpanded ? "Show less" : "Show more"}</span>
+            <span className="text-sm">
+              {isExpanded ? "Show less" : "Show more"}
+            </span>
             <ChevronDown
-              className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : "rotate-0"}`}
+              className={`transition-transform duration-300 ${
+                isExpanded ? "rotate-180" : "rotate-0"
+              }`}
               size={16}
             />
           </button>
 
           {isExpanded && (
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {item.type === "publication" && item.keywords && item.keywords.length > 0 && (
-                <div>
-                  <h4 className="text-blue-michigan font-medium mb-2">Keywords</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {item.keywords.map((keyword: string, idx: number) => (
-                      <span key={idx} className="text-xs bg-gray-100 text-blue-michigan px-2 py-1 rounded-full">
-                        {keyword}
-                      </span>
-                    ))}
+              {item.type === "publication" &&
+                item.keywords &&
+                item.keywords.length > 0 && (
+                  <div>
+                    <h4 className="text-blue-michigan font-medium mb-2">
+                      Keywords
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {item.keywords.map((keyword: string, idx: number) => (
+                        <span
+                          key={idx}
+                          className="text-xs bg-gray-100 text-blue-michigan px-2 py-1 rounded-full"
+                        >
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {item.type === "project" && item.collaborators && item.collaborators.length > 0 && (
-                <div>
-                  <h4 className="text-blue-michigan font-medium mb-2">Collaborators</h4>
-                  <ul className="space-y-1">
-                    {item.collaborators.map((collaborator: string, idx: number) => (
-                      <li key={idx} className="flex items-start">
-                        <span className="inline-block w-2 h-2 rounded-full bg-blue-michigan/70 mt-2 mr-2"></span>
-                        <span className="text-blue-michigan">{collaborator}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {item.type === "project" &&
+                item.collaborators &&
+                item.collaborators.length > 0 && (
+                  <div>
+                    <h4 className="text-blue-michigan font-medium mb-2">
+                      Collaborators
+                    </h4>
+                    <ul className="space-y-1">
+                      {item.collaborators.map(
+                        (collaborator: string, idx: number) => (
+                          <li key={idx} className="flex items-start">
+                            <span className="inline-block w-2 h-2 rounded-full bg-blue-michigan/70 mt-2 mr-2"></span>
+                            <span className="text-blue-michigan">
+                              {collaborator}
+                            </span>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
 
               {item.type === "project" && item.fundingSource && (
                 <div>
-                  <h4 className="text-blue-michigan font-medium mb-2">Funding</h4>
+                  <h4 className="text-blue-michigan font-medium mb-2">
+                    Funding
+                  </h4>
                   <p className="text-blue-michigan">{item.fundingSource}</p>
                 </div>
               )}
@@ -828,5 +1101,5 @@ function ResearchListItem({
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
