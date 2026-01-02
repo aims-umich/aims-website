@@ -34,6 +34,47 @@ export async function getNewsItemBySlug(slug: string) {
   return data
 }
 
+async function generateUniqueSlug(dateString: string, id?: string) {
+  const supabase = await createClient()
+  
+  // Convert date string (e.g., "January 1, 2026") to MM-DD-YYYY
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) {
+    const today = new Date()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    const yyyy = today.getFullYear()
+    dateString = `${mm}-${dd}-${yyyy}`
+  } else {
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    const yyyy = date.getFullYear()
+    dateString = `${mm}-${dd}-${yyyy}`
+  }
+
+  let slug = dateString
+  let count = 1
+  let isUnique = false
+
+  while (!isUnique) {
+    const checkSlug = count === 1 ? slug : `${slug}_${count}`
+    const { data } = await supabase
+      .from('news')
+      .select('id')
+      .eq('slug', checkSlug)
+      .maybeSingle()
+
+    if (!data || (id && data.id === id)) {
+      slug = checkSlug
+      isUnique = true
+    } else {
+      count++
+    }
+  }
+
+  return slug
+}
+
 export async function upsertNewsItem(item: any) {
   const supabase = await createClient()
   
@@ -50,6 +91,13 @@ export async function upsertNewsItem(item: any) {
   if (!admin) throw new Error('Unauthorized')
 
   const payload = { ...item };
+  
+  // Generate slug if it's a new item or if we're forcing a slug refresh
+  // For existing items being edited, we typically keep the slug unless it's missing
+  if (!payload.id || !payload.slug) {
+    payload.slug = await generateUniqueSlug(payload.date, payload.id);
+  }
+
   if (!payload.id) delete payload.id;
 
   const { data, error } = await supabase
