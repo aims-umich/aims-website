@@ -41,6 +41,7 @@ CREATE TABLE members (
   linkedin TEXT,
   website TEXT,
   slug TEXT UNIQUE NOT NULL,
+  projects JSONB DEFAULT '[]',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -122,6 +123,40 @@ CREATE POLICY "Admin Write Access" ON research FOR ALL USING (auth.jwt() ->> 'em
 CREATE POLICY "Admin Write Access" ON map_locations FOR ALL USING (auth.jwt() ->> 'email' IN (SELECT email FROM admins));
 CREATE POLICY "Admin Write Access" ON map_connections FOR ALL USING (auth.jwt() ->> 'email' IN (SELECT email FROM admins));
 CREATE POLICY "Admin Write Access" ON gallery_items FOR ALL USING (auth.jwt() ->> 'email' IN (SELECT email FROM admins));
+
+-- Storage Policies for media bucket
+-- Allow authenticated admins to upload files
+CREATE POLICY "Admins can upload files" ON storage.objects
+FOR INSERT TO authenticated
+WITH CHECK (
+  bucket_id = 'media' AND
+  (auth.jwt() ->> 'email') IN (SELECT email FROM admins)
+);
+
+-- Allow authenticated admins to update files
+CREATE POLICY "Admins can update files" ON storage.objects
+FOR UPDATE TO authenticated
+USING (
+  bucket_id = 'media' AND
+  (auth.jwt() ->> 'email') IN (SELECT email FROM admins)
+)
+WITH CHECK (
+  bucket_id = 'media' AND
+  (auth.jwt() ->> 'email') IN (SELECT email FROM admins)
+);
+
+-- Allow authenticated admins to delete files
+CREATE POLICY "Admins can delete files" ON storage.objects
+FOR DELETE TO authenticated
+USING (
+  bucket_id = 'media' AND
+  (auth.jwt() ->> 'email') IN (SELECT email FROM admins)
+);
+
+-- Public read access for media bucket
+CREATE POLICY "Public can read files" ON storage.objects
+FOR SELECT TO public
+USING (bucket_id = 'media');
 
 -- Seed initial admin
 INSERT INTO admins (email) VALUES ('radaideh@umich.edu');
