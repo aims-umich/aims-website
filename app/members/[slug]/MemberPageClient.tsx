@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { useEffect } from "react"
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 import {
   ArrowLeft,
   Mail,
@@ -13,24 +13,92 @@ import {
   Lightbulb,
   MapPin,
   Calendar,
-} from "lucide-react"
-import { TeamMember } from "@/data/members"
+  Settings,
+  LogOut,
+} from "lucide-react";
+import { login, logout, getAdminStatus } from "@/lib/supabase/actions";
+import { upsertMember, deleteMember } from "@/lib/supabase/actions/members";
+import AdminWrapper from "@/components/admin/AdminWrapper";
+import AdminModal from "@/components/admin/AdminModal";
+import MemberForm from "@/components/admin/forms/MemberForm";
 
-export default function MemberPageClient({ member }: { member: TeamMember }) {
+import { useState } from "react";
+
+export default function MemberPageClient({
+  member: initialMember,
+}: {
+  member: any;
+}) {
+  const [member, setMember] = useState(initialMember);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
+
   useEffect(() => {
-    document.body.style.overflow = "auto"
-
+    document.body.style.overflow = "auto";
     return () => {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  const handleEdit = () => {
+    setFormData(member);
+    setIsModalOpen(true);
+  };
+
+
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const norm = (v: any) =>
+        typeof v === "string"
+          ? v.trim() === ""
+            ? []
+            : v
+                .split(v.includes("\n") ? "\n" : ",")
+                .map((x) => x.trim())
+                .filter(Boolean)
+          : Array.isArray(v)
+          ? v
+          : [];
+      await upsertMember({
+        ...formData,
+        interests: norm(formData.interests),
+        education: norm(formData.education),
+        degrees: norm(formData.degrees),
+      });
+      setMember(formData);
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error saving member");
+    } finally {
+      setIsSaving(false);
     }
-  }, [])
+  };
+
+  const handleDelete = async () => {
+    if (!member?.id) return;
+    setIsDeleting(true);
+    try {
+      await deleteMember(member.id);
+      window.location.href = "/members";
+    } catch (error) {
+      alert("Error deleting member");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={member.heroImageUrl || "/default.webp"}
+            src={
+              member.hero_image_url || member.heroImageUrl || "/default.webp"
+            }
             alt={`${member.name} hero image`}
             fill
             className="object-cover"
@@ -38,6 +106,13 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-white" />
         </div>
+        <AdminWrapper
+          onEdit={handleEdit}
+          label="Edit Member Profile"
+          className="absolute top-4 right-4 z-50"
+        >
+          <div className="hidden group-hover:block" />
+        </AdminWrapper>
 
         <div className="absolute bottom-0 left-0 w-full">
           <div className="max-w-7xl mx-auto px-4 pb-8">
@@ -49,7 +124,7 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
             >
               <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full border-4 border-white overflow-hidden shadow-xl">
                 <Image
-                  src={member.imageUrl}
+                  src={member.image_url || member.imageUrl}
                   alt={member.name}
                   fill
                   className="object-cover"
@@ -62,7 +137,9 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-michigan">{member.name}</h1>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-michigan">
+                    {member.name}
+                  </h1>
                   <p className="text-xl md:text-2xl text-blue-michigan mt-2">
                     {/* {member.status} -  */}
                     {member.role}
@@ -83,7 +160,9 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
             className="space-y-8"
           >
             <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
-              <h2 className="text-lg font-semibold text-blue-michigan mb-4">Contact & Info</h2>
+              <h2 className="text-lg font-semibold text-blue-michigan mb-4">
+                Contact & Info
+              </h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-blue-michigan/70 mt-1" />
@@ -93,7 +172,9 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
                 </div>
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-blue-michigan/70" />
-                  <p className="text-blue-michigan">Joined {member.joinedDate}</p>
+                  <p className="text-blue-michigan">
+                    Joined {member.joined_date || member.joinedDate}
+                  </p>
                 </div>
               </div>
 
@@ -125,9 +206,13 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
                   </a>
                 )}
               </div>
+
+              {member.slug === "radaideh" && (
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <AdminAccessButton />
+                </div>
+              )}
             </div>
-
-
           </motion.div>
 
           <motion.div
@@ -138,14 +223,20 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
           >
             {member.bio && (
               <div className="prose prose-lg max-w-none">
-                <h2 className="text-2xl font-bold text-blue-michigan mb-4">Biography</h2>
-                <p className="text-blue-michigan/80 leading-relaxed">{member.bio}</p>
+                <h2 className="text-2xl font-bold text-blue-michigan mb-4">
+                  Biography
+                </h2>
+                <p className="text-blue-michigan/80 leading-relaxed">
+                  {member.bio}
+                </p>
               </div>
             )}
 
             {member.interests && (
               <div>
-                <h2 className="text-2xl font-bold text-blue-michigan mb-6">Research Interests</h2>
+                <h2 className="text-2xl font-bold text-blue-michigan mb-6">
+                  Research Interests
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {member.interests.map((interest, idx) => (
                     <motion.div
@@ -159,8 +250,12 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
                         <Lightbulb className="w-6 h-6 text-blue-michigan" />
                       </div>
                       <div>
-                        <h3 className="font-medium text-blue-michigan">{interest}</h3>
-                        <p className="text-sm text-blue-michigan/70 mt-1">Current research focus</p>
+                        <h3 className="font-medium text-blue-michigan">
+                          {interest}
+                        </h3>
+                        <p className="text-sm text-blue-michigan/70 mt-1">
+                          Current research focus
+                        </p>
                       </div>
                     </motion.div>
                   ))}
@@ -170,7 +265,9 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
 
             {member.education && (
               <div>
-                <h2 className="text-2xl font-bold text-blue-michigan mb-6">Education</h2>
+                <h2 className="text-2xl font-bold text-blue-michigan mb-6">
+                  Education
+                </h2>
                 <div className="space-y-6">
                   {member.education.map((edu, idx) => (
                     <motion.div
@@ -184,9 +281,13 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
                         <GraduationCap className="w-6 h-6 text-blue-michigan" />
                       </div>
                       <div>
-                        <h3 className="font-medium text-blue-michigan">{edu}</h3>
+                        <h3 className="font-medium text-blue-michigan">
+                          {edu}
+                        </h3>
                         <p className="text-sm text-blue-michigan/70 mt-1">
-                          {member.degrees && member.degrees[idx] ? member.degrees[idx] : "N/A"}
+                          {member.degrees && member.degrees[idx]
+                            ? member.degrees[idx]
+                            : "N/A"}
                         </p>
                       </div>
                     </motion.div>
@@ -194,6 +295,8 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
                 </div>
               </div>
             )}
+
+
           </motion.div>
         </div>
 
@@ -212,7 +315,52 @@ export default function MemberPageClient({ member }: { member: TeamMember }) {
           </Link>
         </motion.div>
       </div>
+
+      <AdminModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Edit Member Profile"
+        onSave={handleSave}
+        isSaving={isSaving}
+        onDelete={member?.id ? handleDelete : undefined}
+        isDeleting={isDeleting}
+      >
+        <MemberForm initialData={formData} onChange={setFormData} />
+      </AdminModal>
+
+
     </div>
-  )
+  );
 }
 
+function AdminAccessButton() {
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    getAdminStatus().then(setIsAdmin);
+  }, []);
+
+  if (isAdmin === null) return null;
+
+  if (isAdmin) {
+    return (
+      <button
+        onClick={() => logout()}
+        className="flex items-center gap-2 text-sm text-blue-michigan/50 hover:text-blue-michigan transition"
+      >
+        <LogOut className="w-4 h-4" />
+        Admin Logout
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => login()}
+      className="flex items-center gap-2 text-sm text-blue-michigan/50 hover:text-blue-michigan transition"
+    >
+      <Settings className="w-4 h-4" />
+      Admin Login
+    </button>
+  );
+}

@@ -1,38 +1,144 @@
-"use client"
+"use client";
 
-import type React from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useState, useId, useRef, useEffect } from "react"
-import { motion, AnimatePresence, Variants } from "framer-motion"
-import { Linkedin, Mail, ChevronDown, GraduationCap, Lightbulb, X } from "lucide-react"
-import { TeamMember, teamMembers } from "@/data/members"
+import type React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useId, useRef, useEffect } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
+import {
+  Linkedin,
+  Mail,
+  ChevronDown,
+  GraduationCap,
+  Lightbulb,
+  X,
+  Plus,
+} from "lucide-react";
+import {
+  getMembers,
+  upsertMember,
+  deleteMember,
+} from "@/lib/supabase/actions/members";
+import AdminWrapper from "@/components/admin/AdminWrapper";
+import AdminModal from "@/components/admin/AdminModal";
+import MemberForm from "@/components/admin/forms/MemberForm";
 
-type MemberCategory = "all" | "pi" | "scientists" | "phd/graduate" | "undergraduate" | "alumni"
+type MemberCategory =
+  | "all"
+  | "pi"
+  | "scientists"
+  | "phd/graduate"
+  | "undergraduate"
+  | "alumni";
 
 export default function TeamShowcase() {
-  const [activeCategory, setActiveCategory] = useState<MemberCategory>("all")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [hoveredMember, setHoveredMember] = useState<string | null>(null)
-  const [isGridView, setIsGridView] = useState(true)
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState<MemberCategory>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hoveredMember, setHoveredMember] = useState<string | null>(null);
+  const [isGridView, setIsGridView] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
 
-  const filteredMembers = teamMembers.filter((member) => {
-    const matchesCategory =
-      (activeCategory === "all" && member.status !== "Alumni") ||
-      (activeCategory === "pi" && member.status === "Principal Investigator") ||
-      (activeCategory === "scientists" && (member.status === "Research Scientist" || member.status === "Postdoc")) ||
-      (activeCategory === "phd/graduate" && (member.status === "PhD" || member.status === "Graduate")) ||
-      (activeCategory === "undergraduate" && member.status === "Undergraduate") ||
-      (activeCategory === "alumni" && member.status === "Alumni")
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (member.interests &&
-        member.interests.some((interest) => interest.toLowerCase().includes(searchQuery.toLowerCase())))
+  const fetchMembers = async () => {
+    const data = await getMembers();
+    setTeamMembers(data);
+  };
 
-    return matchesCategory && matchesSearch
-  }).sort((a, b) => a.name.localeCompare(b.name));
+  const handleEdit = (member: any) => {
+    setEditingMember(member);
+    setFormData(member);
+    setIsModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setEditingMember(null);
+    setFormData({
+      status: "Graduate",
+      joined_date: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      }),
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const norm = (v: any) =>
+        typeof v === "string"
+          ? v.trim() === ""
+            ? []
+            : v
+                .split(v.includes("\n") ? "\n" : ",")
+                .map((x) => x.trim())
+                .filter(Boolean)
+          : Array.isArray(v)
+          ? v
+          : [];
+      await upsertMember({
+        ...formData,
+        interests: norm(formData.interests),
+        education: norm(formData.education),
+        degrees: norm(formData.degrees),
+      });
+      await fetchMembers();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error saving member");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingMember?.id) return;
+    setIsDeleting(true);
+    try {
+      await deleteMember(editingMember.id);
+      await fetchMembers();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error deleting member");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const filteredMembers = (teamMembers || [])
+    .filter((member) => {
+      const matchesCategory =
+        (activeCategory === "all" && member.status !== "Alumni") ||
+        (activeCategory === "pi" &&
+          member.status === "Principal Investigator") ||
+        (activeCategory === "scientists" &&
+          (member.status === "Research Scientist" ||
+            member.status === "Postdoc")) ||
+        (activeCategory === "phd/graduate" &&
+          (member.status === "PhD" || member.status === "Graduate")) ||
+        (activeCategory === "undergraduate" &&
+          member.status === "Undergraduate") ||
+        (activeCategory === "alumni" && member.status === "Alumni");
+
+      const matchesSearch =
+        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (member.interests &&
+          member.interests.some((interest: string) =>
+            interest.toLowerCase().includes(searchQuery.toLowerCase())
+          ));
+
+      return matchesCategory && matchesSearch;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,7 +148,7 @@ export default function TeamShowcase() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -51,32 +157,58 @@ export default function TeamShowcase() {
       opacity: 1,
       transition: { type: "spring", stiffness: 100 },
     },
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white text-blue-michigan py-32">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Member <span className="text-yellow-maize">Directory</span>
-          </h1>
+          <div className="flex items-center justify-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Member <span className="text-yellow-maize">Directory</span>
+            </h1>
+            <AdminWrapper
+              onEdit={handleAdd}
+              label="Add"
+              variant="add"
+              position="header"
+            >
+              <span />
+            </AdminWrapper>
+          </div>
           <p className="max-w-2xl mx-auto text-blue-michigan text-lg">
-            Our group follows a hierarchy where our students step up to support Majdi in administering AIMS especially after we became a 20+ member group. Student leaders make a lot of day-to-day management and communications of their respective groups, while Majdi is kept for final approvals on major items related to each group.
+            Our group follows a hierarchy where our students step up to support
+            Majdi in administering AIMS especially after we became a 20+ member
+            group. Student leaders make a lot of day-to-day management and
+            communications of their respective groups, while Majdi is kept for
+            final approvals on major items related to each group.
           </p>
         </div>
 
         <div className="mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-wrap gap-2 justify-center">
-            <CategoryButton active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>
+            <CategoryButton
+              active={activeCategory === "all"}
+              onClick={() => setActiveCategory("all")}
+            >
               All Members
             </CategoryButton>
-            <CategoryButton active={activeCategory === "pi"} onClick={() => setActiveCategory("pi")}>
+            <CategoryButton
+              active={activeCategory === "pi"}
+              onClick={() => setActiveCategory("pi")}
+            >
               Principal Investigators
             </CategoryButton>
-            <CategoryButton active={activeCategory === "scientists"} onClick={() => setActiveCategory("scientists")}>
+            <CategoryButton
+              active={activeCategory === "scientists"}
+              onClick={() => setActiveCategory("scientists")}
+            >
               Postdocs
             </CategoryButton>
-            <CategoryButton active={activeCategory === "phd/graduate"} onClick={() => setActiveCategory("phd/graduate")}>
+            <CategoryButton
+              active={activeCategory === "phd/graduate"}
+              onClick={() => setActiveCategory("phd/graduate")}
+            >
               PhD + Graduate
             </CategoryButton>
             <CategoryButton
@@ -85,7 +217,10 @@ export default function TeamShowcase() {
             >
               Undergraduate
             </CategoryButton>
-            <CategoryButton active={activeCategory === "alumni"} onClick={() => setActiveCategory("alumni")}>
+            <CategoryButton
+              active={activeCategory === "alumni"}
+              onClick={() => setActiveCategory("alumni")}
+            >
               Alumni
             </CategoryButton>
           </div>
@@ -103,7 +238,11 @@ export default function TeamShowcase() {
             <div className="flex gap-2">
               <button
                 onClick={() => setIsGridView(true)}
-                className={`p-2 rounded-lg ${isGridView ? "bg-blue-michigan text-white" : "bg-gray-100 text-blue-michigan hover:bg-gray-200"}`}
+                className={`p-2 rounded-lg ${
+                  isGridView
+                    ? "bg-blue-michigan text-white"
+                    : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+                }`}
                 aria-label="Grid view"
               >
                 <svg
@@ -125,7 +264,11 @@ export default function TeamShowcase() {
               </button>
               <button
                 onClick={() => setIsGridView(false)}
-                className={`p-2 rounded-lg ${!isGridView ? "bg-blue-michigan text-white" : "bg-gray-100 text-blue-michigan hover:bg-gray-200"}`}
+                className={`p-2 rounded-lg ${
+                  !isGridView
+                    ? "bg-blue-michigan text-white"
+                    : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+                }`}
                 aria-label="List view"
               >
                 <svg
@@ -150,7 +293,8 @@ export default function TeamShowcase() {
 
         <div className="mb-8 text-blue-michigan">
           <p>
-            Showing {filteredMembers.length} {filteredMembers.length === 1 ? "member" : "members"}
+            Showing {filteredMembers.length}{" "}
+            {filteredMembers.length === 1 ? "member" : "members"}
           </p>
         </div>
 
@@ -162,31 +306,62 @@ export default function TeamShowcase() {
             animate="visible"
           >
             {filteredMembers.map((member) => (
-              <MemberCard
+              <AdminWrapper
                 key={member.id}
-                member={member}
-                isHovered={hoveredMember === member.id}
-                onHover={() => setHoveredMember(member.id)}
-                onLeave={() => setHoveredMember(null)}
-                variants={itemVariants}
-              />
+                onEdit={() => handleEdit(member)}
+                label="Edit Member"
+                className="h-full"
+              >
+                <MemberCard
+                  member={member}
+                  isHovered={hoveredMember === member.id}
+                  onHover={() => setHoveredMember(member.id)}
+                  onLeave={() => setHoveredMember(null)}
+                  variants={itemVariants}
+                />
+              </AdminWrapper>
             ))}
           </motion.div>
         ) : (
-          <motion.div className="flex flex-col gap-4" variants={containerVariants} initial="hidden" animate="visible">
+          <motion.div
+            className="flex flex-col gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {filteredMembers.map((member) => (
-              <MemberListItem key={member.id} member={member} variants={itemVariants} />
+              <AdminWrapper
+                key={member.id}
+                onEdit={() => handleEdit(member)}
+                label="Edit Member"
+              >
+                <MemberListItem member={member} variants={itemVariants} />
+              </AdminWrapper>
             ))}
           </motion.div>
         )}
 
+        <AdminModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title={editingMember ? "Edit Member Profile" : "Add New Member"}
+          onSave={handleSave}
+          isSaving={isSaving}
+          onDelete={editingMember?.id ? handleDelete : undefined}
+          isDeleting={isDeleting}
+        >
+          <MemberForm initialData={formData} onChange={setFormData} />
+        </AdminModal>
+
         {filteredMembers.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-blue-michigan text-xl">No members found matching your criteria.</p>
+            <p className="text-blue-michigan text-xl">
+              No members found matching your criteria.
+            </p>
             <button
               onClick={() => {
-                setActiveCategory("all")
-                setSearchQuery("")
+                setActiveCategory("all");
+                setSearchQuery("");
               }}
               className="mt-4 px-4 py-2 bg-blue-michigan text-yellow-maize rounded-lg hover:bg-blue-michigan/90 transition"
             >
@@ -196,7 +371,7 @@ export default function TeamShowcase() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // category filter button
@@ -205,20 +380,22 @@ function CategoryButton({
   active,
   onClick,
 }: {
-  children: React.ReactNode
-  active: boolean
-  onClick: () => void
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
       className={`px-4 py-2 rounded-lg transition-all duration-300 ${
-        active ? "bg-blue-michigan text-yellow-maize" : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
+        active
+          ? "bg-blue-michigan text-yellow-maize"
+          : "bg-gray-100 text-blue-michigan hover:bg-gray-200"
       }`}
     >
       {children}
     </button>
-  )
+  );
 }
 
 // grid view card component
@@ -229,38 +406,38 @@ function MemberCard({
   onLeave,
   variants,
 }: {
-  member: TeamMember
-  isHovered: boolean
-  onHover: () => void
-  onLeave: () => void
-  variants: Variants
+  member: any;
+  isHovered: boolean;
+  onHover: () => void;
+  onLeave: () => void;
+  variants: Variants;
 }) {
-  const [active, setActive] = useState(false)
-  const id = useId()
-  const ref = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(false);
+  const id = useId();
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setActive(false)
+        setActive(false);
       }
     }
 
     if (active) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = "auto";
     }
 
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [active])
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [active]);
 
   const handleModalClose = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setActive(false)
+      setActive(false);
     }
-  }
+  };
 
   return (
     <>
@@ -275,7 +452,7 @@ function MemberCard({
           <div className="relative aspect-square overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-blue-michigan/30 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <Image
-              src={member.imageUrl}
+              src={member.image_url || member.imageUrl}
               alt={member.name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -283,16 +460,25 @@ function MemberCard({
           </div>
 
           <div className="p-6 relative">
-            <h3 className="text-xl font-bold text-blue-michigan mb-1 relative z-10">{member.name}</h3>
+            <h3 className="text-xl font-bold text-blue-michigan mb-1 relative z-10">
+              {member.name}
+            </h3>
             <p className="text-blue-michigan/70 mb-3 relative z-10">
               {/* {member.status} -  */}
               {member.role}
             </p>
 
-            <div className={`overflow-hidden transition-all duration-300 ${isHovered ? "max-h-40" : "max-h-0"}`}>
+            <div
+              className={`overflow-hidden transition-all duration-300 ${
+                isHovered ? "max-h-40" : "max-h-0"
+              }`}
+            >
               {member.interests && member.interests.length > 0 && (
                 <div className="flex items-start gap-2 mb-3">
-                  <Lightbulb className="text-blue-michigan/70 mt-1 shrink-0" size={16} />
+                  <Lightbulb
+                    className="text-blue-michigan/70 mt-1 shrink-0"
+                    size={16}
+                  />
                   <p className="text-sm text-blue-michigan">
                     {member.interests.slice(0, 2).join(", ")}
                     {member.interests.length > 2 && "..."}
@@ -302,7 +488,10 @@ function MemberCard({
 
               {member.education && member.education.length > 0 && (
                 <div className="flex items-start gap-2">
-                  <GraduationCap className="text-blue-michigan/70 mt-1 shrink-0" size={16} />
+                  <GraduationCap
+                    className="text-blue-michigan/70 mt-1 shrink-0"
+                    size={16}
+                  />
                   <p className="text-sm text-blue-michigan">
                     {member.education[0]}
                     {member.education.length > 1 && "..."}
@@ -321,7 +510,9 @@ function MemberCard({
                 </button>
               </div>
               <ChevronDown
-                className={`text-blue-michigan/70 transition-transform duration-300 ${isHovered ? "rotate-180" : "rotate-0"}`}
+                className={`text-blue-michigan/70 transition-transform duration-300 ${
+                  isHovered ? "rotate-180" : "rotate-0"
+                }`}
                 size={18}
               />
             </div>
@@ -354,7 +545,7 @@ function MemberCard({
 
               <div className="md:w-2/5 relative">
                 <Image
-                  src={member.imageUrl}
+                  src={member.image_url || member.imageUrl}
                   alt={member.name}
                   className="object-cover h-full w-full"
                   width={500}
@@ -363,7 +554,9 @@ function MemberCard({
               </div>
 
               <div className="md:w-3/5 p-6 md:p-8 overflow-y-auto max-h-[70vh] md:max-h-[90vh]">
-                <h2 className="text-3xl font-bold text-blue-michigan mb-1">{member.name}</h2>
+                <h2 className="text-3xl font-bold text-blue-michigan mb-1">
+                  {member.name}
+                </h2>
                 <p className="text-blue-michigan/70 mb-6">
                   {/* {member.status} -  */}
                   {member.role}
@@ -377,7 +570,9 @@ function MemberCard({
 
                 {member.interests && member.interests.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-xl font-medium text-blue-michigan mb-2">Interests</h3>
+                    <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                      Interests
+                    </h3>
                     <ul className="space-y-1">
                       {member.interests.map((interest: string, idx: number) => (
                         <li key={idx} className="flex items-start">
@@ -391,7 +586,9 @@ function MemberCard({
 
                 {member.education && member.education.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-xl font-medium text-blue-michigan mb-2">Education</h3>
+                    <h3 className="text-xl font-medium text-blue-michigan mb-2">
+                      Education
+                    </h3>
                     <ul className="space-y-2">
                       {member.education.map((edu: string, idx: number) => (
                         <li key={idx} className="flex items-start">
@@ -430,7 +627,7 @@ function MemberCard({
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
 // list view item component
@@ -438,10 +635,10 @@ function MemberListItem({
   member,
   variants,
 }: {
-  member: TeamMember
-  variants: Variants
+  member: any;
+  variants: Variants;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <motion.div
@@ -451,7 +648,7 @@ function MemberListItem({
       <div className="p-4 sm:p-6 flex flex-col sm:flex-row gap-6">
         <div className="relative w-full sm:w-24 h-24 shrink-0">
           <Image
-            src={member.imageUrl}
+            src={member.image_url || member.imageUrl}
             alt={member.name}
             width={96}
             height={96}
@@ -462,7 +659,9 @@ function MemberListItem({
         <div className="flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
             <div>
-              <h3 className="text-xl font-bold text-blue-michigan">{member.name}</h3>
+              <h3 className="text-xl font-bold text-blue-michigan">
+                {member.name}
+              </h3>
               <p className="text-blue-michigan/70">
                 {/* {member.status} -  */}
                 {member.role}
@@ -494,9 +693,13 @@ function MemberListItem({
             onClick={() => setIsExpanded(!isExpanded)}
             className="flex items-center gap-1 text-blue-michigan/70 hover:text-blue-michigan transition"
           >
-            <span className="text-sm">{isExpanded ? "Show less" : "Show more"}</span>
+            <span className="text-sm">
+              {isExpanded ? "Show less" : "Show more"}
+            </span>
             <ChevronDown
-              className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : "rotate-0"}`}
+              className={`transition-transform duration-300 ${
+                isExpanded ? "rotate-180" : "rotate-0"
+              }`}
               size={16}
             />
           </button>
@@ -535,5 +738,5 @@ function MemberListItem({
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
