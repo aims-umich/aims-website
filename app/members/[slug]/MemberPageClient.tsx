@@ -63,13 +63,16 @@ export default function MemberPageClient({
           : Array.isArray(v)
           ? v
           : [];
-      await upsertMember({
+      
+      const normalizedData = {
         ...formData,
         interests: norm(formData.interests),
         education: norm(formData.education),
         degrees: norm(formData.degrees),
-      });
-      setMember(formData);
+      };
+      
+      await upsertMember(normalizedData);
+      setMember(normalizedData);
       setIsModalOpen(false);
     } catch (error) {
       alert("Error saving member");
@@ -263,7 +266,7 @@ export default function MemberPageClient({
               </div>
             )}
 
-            {member.education && (
+            {member.education && Array.isArray(member.education) && member.education.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-blue-michigan mb-6">
                   Education

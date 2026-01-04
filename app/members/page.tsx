@@ -584,7 +584,7 @@ function MemberCard({
                   </div>
                 )}
 
-                {member.education && member.education.length > 0 && (
+                {member.education && Array.isArray(member.education) && member.education.length > 0 && (
                   <div className="mb-6">
                     <h3 className="text-xl font-medium text-blue-michigan mb-2">
                       Education
@@ -720,7 +720,7 @@ function MemberListItem({
                 </div>
               )}
 
-              {member.education && member.education.length > 0 && (
+              {member.education && Array.isArray(member.education) && member.education.length > 0 && (
                 <div>
                   <h4 className="text-blue-michigan font-medium flex items-center gap-2 mb-2">
                     <GraduationCap size={16} />
