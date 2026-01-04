@@ -21,7 +21,7 @@ export default function NewsArticlePage() {
     async function fetchArticle() {
       const slug = params.slug as string
 
-      let foundArticle = newsItems.find((item) => item.slug === slug)
+      const foundArticle = newsItems.find((item) => item.slug === slug)
       
       let finalArticle: any = null
       
