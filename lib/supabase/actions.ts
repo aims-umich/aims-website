@@ -8,7 +8,7 @@ export async function login() {
   const supabase = await createClient()
   const host = (await headers()).get('host')
   const protocol = host?.includes('localhost') ? 'http' : 'https'
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`
+  const siteUrl = process.env.NEXT_PUBLIC_NEXT_PUBLIC_SUPABASE_URL || `${protocol}://${host}`
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
