@@ -568,7 +568,7 @@ function MemberCard({
                   </div>
                 )}
 
-                {member.interests && member.interests.length > 0 && (
+                {member.interests && Array.isArray(member.interests) && member.interests.length > 0 && (
                   <div className="mb-6">
                     <h3 className="text-xl font-medium text-blue-michigan mb-2">
                       Interests
@@ -706,7 +706,7 @@ function MemberListItem({
 
           {isExpanded && (
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {member.interests && member.interests.length > 0 && (
+              {member.interests && Array.isArray(member.interests) && member.interests.length > 0 && (
                 <div>
                   <h4 className="text-blue-michigan font-medium flex items-center gap-2 mb-2">
                     <Lightbulb size={16} />

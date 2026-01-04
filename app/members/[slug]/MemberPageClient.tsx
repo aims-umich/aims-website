@@ -232,7 +232,7 @@ export default function MemberPageClient({
               </div>
             )}
 
-            {member.interests && (
+            {member.interests && Array.isArray(member.interests) && member.interests.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-blue-michigan mb-6">
                   Research Interests
