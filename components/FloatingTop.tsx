@@ -32,9 +32,13 @@ const FloatingTop = () => {
       }`}
       onClick={scrollToTop}
     >
-      <button className="p-0 border-none bg-transparent cursor-pointer">
+      <button
+        type="button"
+        aria-label="Scroll back to top"
+        className="p-0 border-none bg-transparent cursor-pointer"
+      >
       <div className="w-[32px] md:w-[64px]">
-          <Image 
+          <Image
             className="rounded-full hover:opacity-80 transition-opacity"
             src="/atomic_symbol.gif"
             width={200}
@@ -43,9 +47,9 @@ const FloatingTop = () => {
             unoptimized
           />
         </div>
-        <h1 className='text-xl font-bold text-blue-michigan'>
+        <span className='block text-xl font-bold text-blue-michigan'>
           Top
-        </h1>
+        </span>
       </button>
     </div>
   )
